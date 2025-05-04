@@ -13,7 +13,8 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final TextEditingController nameController = TextEditingController();
+  final TextEditingController firstnameController = TextEditingController();
+  final TextEditingController lastnameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
@@ -39,28 +40,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Column(
                     children: [
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 60),
                       Container(
-                        width: 120,
-                        height: 120,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Image.asset(
-                                'assets/images/logo.png',
-                                width: 100,
-                                height: 100,
-                              ),
-                            ],
-                          ),
+                        width: 150,
+                        height: 150,
+                        child: Image(
+                          image: AssetImage('assets/images/logo2.png')
                         ),
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 20),
                       const Text(
                         'Register',
                         style: TextStyle(
@@ -70,7 +58,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       const SizedBox(height: 30),
-                      buildTextField('Name', nameController),
+                      buildTextField('First Name', firstnameController),
+                      const SizedBox(height: 20),
+                      buildTextField('Last Name', lastnameController),
                       const SizedBox(height: 20),
                       buildTextField('E-mail', emailController, isEmail: true),
                       const SizedBox(height: 20),
@@ -81,7 +71,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ElevatedButton(
                         onPressed: () {
                           if (passwordController.text == confirmPasswordController.text) {
-                            print('Name: ${nameController.text}');
+                            print('First Name: ${firstnameController.text}');
+                            print('Last Name: ${lastnameController.text}');
                             print('Email: ${emailController.text}');
                             print('Password: ${passwordController.text}');
                             Navigator.pop(context);
@@ -100,10 +91,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         child: const Text(
                           'Sign Up',
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 50),
+                      Container(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(96, 131, 131, 131),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Sudah Punya Akun ? ',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/login');
+                              },
+                              child: const Text(
+                                'Login',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),

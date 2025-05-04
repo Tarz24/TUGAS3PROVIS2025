@@ -37,30 +37,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 60),
                       Container(
-                        width: 120,
-                        height: 120,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Image.asset(
-                                'assets/images/logo.png',
-                                width: 100,
-                                height: 100,
-                              ),
-                            ],
-                          ),
+                        width: 200,
+                        height: 200,
+                        child: Image(
+                          image: AssetImage('assets/images/logo2.png')
                         ),
                       ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 20),
                       const Text(
                         'Login',
                         style: TextStyle(
@@ -82,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             controller: emailController,
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: Colors.white.withOpacity(0.9),
+                              fillColor: Colors.white,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: BorderSide.none,
@@ -105,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             controller: passwordController,
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: Colors.white.withOpacity(0.9),
+                              fillColor: Colors.white,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: BorderSide.none,
@@ -115,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 40),
                       ElevatedButton(
                         onPressed: () {
                           Navigator.pushReplacementNamed(context, '/menu');
@@ -129,14 +115,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: const Text(
                           'Login',
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 50),
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.3),
+                          color: const Color.fromARGB(96, 131, 131, 131),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
@@ -161,7 +147,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
