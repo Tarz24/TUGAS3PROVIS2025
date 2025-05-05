@@ -28,7 +28,7 @@ class _ProductPageState extends State<ProductPage> {
                 Stack(
                   children: [
                     Image.asset(
-                      "assets/tenda.jpg",
+                      "assets/images/tenda.jpg",
                       fit: BoxFit.cover,
                       width: double.infinity,
                       height: 350,

@@ -8,7 +8,6 @@ class FAQPage extends StatelessWidget {
     final faqs = [
       {'q': 'Bagaimana cara mulai menggunakan aplikasi ini?', 'a': 'Daftar akun terlebih dahulu, lalu login untuk mengakses semua fitur.'},
       {'q': 'Bisa dipakai di lebih dari satu perangkat?', 'a': 'Bisa! Cukup login dengan akun yang sama di perangkat lain.'},
-      {'q': 'Bisa dipakai di lebih dari satu perangkat?', 'a': 'Bisa! Cukup login dengan akun yang sama di perangkat lain.'},
       {'q': 'Ada fitur dark mode?', 'a': 'Saat ini belum tersedia, tapi kami sedang mengembangkannya!'},
     ];
 

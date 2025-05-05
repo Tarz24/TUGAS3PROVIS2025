@@ -28,7 +28,7 @@ class HelpPage extends StatelessWidget {
           children: [
             const CircleAvatar(
               radius: 50,
-              backgroundImage: AssetImage('assets/hanif.jpg'), // Ganti sesuai path
+              backgroundImage: AssetImage('assets/images/profile.png'), // Ganti sesuai path
             ),
             const SizedBox(height: 12),
             const Text('NAIK ZAKIR', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),

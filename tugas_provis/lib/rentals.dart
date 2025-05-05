@@ -20,19 +20,19 @@ class MyApp extends StatelessWidget {
 class RentalPage extends StatelessWidget {
   final List<RentalItem> items = [
     RentalItem(
-      image: 'assets/tenda.png',
+      image: 'assets/images/tenda.jpg',
       title: 'Tenda Camping Consina',
       duration: '3 days',
       durationColor: Colors.green,
     ),
     RentalItem(
-      image: 'assets/sleepingbag.png',
+      image: 'assets/images/sleeping_bag.jpg',
       title: 'Sleepingbag Polar\nTebal + Bantal',
       duration: '2 days',
       durationColor: Colors.orange,
     ),
     RentalItem(
-      image: 'assets/sepatu.png',
+      image: 'assets/images/sepatu.jpg',
       title: 'Sepatu Outdoor OWEN',
       duration: '6 Hours',
       durationColor: Colors.red,
