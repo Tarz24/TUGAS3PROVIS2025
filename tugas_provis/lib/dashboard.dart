@@ -1,5 +1,21 @@
 import 'package:flutter/material.dart';
 
+// Import halaman-halaman dari file dart lain di lib/
+// import 'logo.dart';
+import 'login.dart';
+import 'register.dart';
+import 'main.dart';
+import 'produk.dart';
+import 'cart.dart';
+import 'checkout.dart';
+import 'chat.dart';
+import 'profile.dart';
+import 'notification.dart';
+import 'information.dart';
+import 'help.dart';
+import 'faq.dart';
+
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -11,21 +27,21 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => TampilanScreen(),
-        '/logo': (context) => SimpleScreen(title: 'Logo Screen'),
-        '/login': (context) => SimpleScreen(title: 'Login Screen'),
-        '/registrasi': (context) => SimpleScreen(title: 'Registrasi Screen'),
-        '/main': (context) => SimpleScreen(title: 'Main Screen'),
-        '/detail': (context) => SimpleScreen(title: 'Detail Produk'),
-        '/keranjang': (context) => SimpleScreen(title: 'Keranjang Screen'),
-        '/checkout': (context) => SimpleScreen(title: 'Checkout Screen'),
-        '/chat': (context) => SimpleScreen(title: 'Chat Screen'),
-        '/profile': (context) => SimpleScreen(title: 'Profile Screen'),
-        '/notification': (context) => SimpleScreen(title: 'Notification'),
-        '/information': (context) => SimpleScreen(title: 'Information'),
-        '/help': (context) => SimpleScreen(title: 'Help'),
-        '/faq': (context) => SimpleScreen(title: 'FAQ'),
-        '/admin': (context) => SimpleScreen(title: 'Hubungi Admin'),
-        '/bug': (context) => SimpleScreen(title: 'Laporan Masalah/Bug'),
+        // '/logo': (context) => LogoScreen(),
+        '/login': (context) => LoginScreen(),
+        '/register': (context) => RegistrasiScreen(),
+        '/main': (context) => MainScreen(),
+        '/detail': (context) => DetailScreen(),
+        '/cart': (context) => KeranjangScreen(),
+        '/checkout': (context) => CheckoutScreen(),
+        '/chat': (context) => ChatScreen(),
+        '/profile': (context) => ProfileScreen(),
+        '/notification': (context) => NotificationScreen(),
+        '/information': (context) => InformationScreen(),
+        '/help': (context) => HelpScreen(),
+        '/faq': (context) => FAQScreen(),
+        '/admin': (context) => AdminScreen(),
+        '/bug': (context) => BugScreen(),
       },
     );
   }
@@ -45,7 +61,7 @@ class TampilanScreen extends StatelessWidget {
     {'label': 'Notification', 'route': '/notification'},
     {'label': 'Information', 'route': '/information'},
     {'label': 'Help', 'route': '/help'},
-    {'label': 'FAQ', 'route': '/FAQ'},
+    {'label': 'FAQ', 'route': '/faq'},
     {'label': 'Hubungi Admin', 'route': '/admin'},
     {'label': 'Laporan Masalah/Bug', 'route': '/bug'},
   ];
@@ -73,7 +89,6 @@ class TampilanScreen extends StatelessWidget {
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
-                  textAlign: TextAlign.left,
                 ),
               ),
               Expanded(
@@ -104,29 +119,6 @@ class TampilanScreen extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// Template Screen Sementara
-class SimpleScreen extends StatelessWidget {
-  final String title;
-
-  const SimpleScreen({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        backgroundColor: Colors.blue[800],
-      ),
-      body: Center(
-        child: Text(
-          title,
-          style: const TextStyle(fontSize: 24),
         ),
       ),
     );
