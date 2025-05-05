@@ -100,7 +100,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   image: DecorationImage(
-                                    image: AssetImage('assets/images/sepatu.jpg'),
+                                    image: AssetImage('assets/images/tenda.jpg'),
                                     fit: BoxFit.cover,
                                   ),
                                   border: Border.all(color: Colors.black, style: BorderStyle.solid),
@@ -218,7 +218,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                       ),
                                       const SizedBox(height: 3),
                                       const Text(
-                                        'Tenda Camping Consina',
+                                        'Sepatu Outdoor OWEN',
                                         style: TextStyle(
                                           fontSize: 18
                                         ),
@@ -228,7 +228,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                         mainAxisAlignment: MainAxisAlignment.end,
                                         children: [
                                           Text(
-                                            "IDR 120.000/day",
+                                            "IDR 45.000/day",
                                             style: TextStyle(fontSize: 18),
                                           ),
                                         ],
@@ -264,7 +264,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   image: DecorationImage(
-                                    image: AssetImage('assets/images/sepatu.jpg'),
+                                    image: AssetImage('assets/images/tas.jpg'),
                                     fit: BoxFit.cover,
                                   ),
                                   border: Border.all(color: Colors.black, style: BorderStyle.solid),
@@ -288,19 +288,11 @@ class _MenuScreenState extends State<MenuScreen> {
                                             ),
                                             child: Text("Hot Deal", style: TextStyle(color: Colors.black)),
                                           ),
-                                          const SizedBox(width: 10),
-                                          Container(padding: EdgeInsets.all(6.0),
-                                            decoration: BoxDecoration(
-                                              color: Color.fromARGB(255, 84, 255, 0),
-                                              borderRadius: BorderRadius.circular(5.0),
-                                            ),
-                                            child: Text("Recommended", style: TextStyle(color: Colors.black)),
-                                          ),
                                         ],
                                       ),
                                       const SizedBox(height: 3),
                                       const Text(
-                                        'Tenda Camping Consina',
+                                        'Carrier 55+5 L Bahan Cordura',
                                         style: TextStyle(
                                           fontSize: 18
                                         ),
@@ -310,7 +302,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                         mainAxisAlignment: MainAxisAlignment.end,
                                         children: [
                                           Text(
-                                            "IDR 120.000/day",
+                                            "IDR 55.000/day",
                                             style: TextStyle(fontSize: 18),
                                           ),
                                         ],
@@ -346,7 +338,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   image: DecorationImage(
-                                    image: AssetImage('assets/images/sepatu.jpg'),
+                                    image: AssetImage('assets/images/sleeping_bag.jpg'),
                                     fit: BoxFit.cover,
                                   ),
                                   border: Border.all(color: Colors.black, style: BorderStyle.solid),
@@ -382,7 +374,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                       ),
                                       const SizedBox(height: 3),
                                       const Text(
-                                        'Tenda Camping Consina',
+                                        'Sleepingbag Polar Tebal+Bantal',
                                         style: TextStyle(
                                           fontSize: 18
                                         ),
@@ -392,7 +384,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                         mainAxisAlignment: MainAxisAlignment.end,
                                         children: [
                                           Text(
-                                            "IDR 120.000/day",
+                                            "IDR 25.000/day",
                                             style: TextStyle(fontSize: 18),
                                           ),
                                         ],
@@ -428,7 +420,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   image: DecorationImage(
-                                    image: AssetImage('assets/images/sepatu.jpg'),
+                                    image: AssetImage('assets/images/sleeping_bag4.jpg'),
                                     fit: BoxFit.cover,
                                   ),
                                   border: Border.all(color: Colors.black, style: BorderStyle.solid),
@@ -464,7 +456,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                       ),
                                       const SizedBox(height: 3),
                                       const Text(
-                                        'Tenda Camping Consina',
+                                        'L.L.Bean Adventure 30° Sleeping Bag',
                                         style: TextStyle(
                                           fontSize: 18
                                         ),
@@ -474,7 +466,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                         mainAxisAlignment: MainAxisAlignment.end,
                                         children: [
                                           Text(
-                                            "IDR 120.000/day",
+                                            "IDR 30.000/day",
                                             style: TextStyle(fontSize: 18),
                                           ),
                                         ],
