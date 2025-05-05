@@ -43,6 +43,9 @@ class RentalPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(
+           color: Colors.white, //change your color here
+        ),
         leading: Icon(Icons.arrow_back),
         title: Center(child: Icon(Icons.shopping_bag_outlined)),
         actions: [Icon(Icons.menu)],
