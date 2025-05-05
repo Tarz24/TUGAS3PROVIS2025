@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => SimpleScreen(title: 'Login Screen'),
         '/registrasi': (context) => SimpleScreen(title: 'Registrasi Screen'),
         '/main': (context) => SimpleScreen(title: 'Main Screen'),
-        '/search': (context) => SimpleScreen(title: 'Search')
+        '/search': (context) => SimpleScreen(title: 'Search'),
         '/detail': (context) => SimpleScreen(title: 'Detail Produk'),
         '/keranjang': (context) => SimpleScreen(title: 'Keranjang Screen'),
         '/checkout': (context) => SimpleScreen(title: 'Checkout Screen'),
