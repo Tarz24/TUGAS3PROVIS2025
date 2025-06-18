@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:tugas_provis/supabase_client.dart';
+
 void main() {
   runApp(const RegisterScreen());
 }
@@ -69,17 +71,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       buildTextField('Confirm password', confirmPasswordController, isPassword: true),
                       const SizedBox(height: 30),
                       ElevatedButton(
-                        onPressed: () {
-                          if (passwordController.text == confirmPasswordController.text) {
-                            print('First Name: ${firstnameController.text}');
-                            print('Last Name: ${lastnameController.text}');
-                            print('Email: ${emailController.text}');
-                            print('Password: ${passwordController.text}');
-                            Navigator.pop(context);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Passwords do not match!')),
+                        onPressed: () async {
+                          // Ambil input dari text field
+                          final email = emailController.text.trim();
+                          final password = passwordController.text.trim();
+                          final firstName = firstnameController.text.trim();
+                          final lastName = lastnameController.text.trim();
+
+                          // Panggil Supabase Auth
+                          try {
+                            final authResponse = await supabase.auth.signUp(
+                              email: email,
+                              password: password,
+                              // 'data' ini akan ditangkap oleh Trigger yang kita buat
+                              data: {'first_name': firstName, 'last_name': lastName},
                             );
+
+                            // Tampilkan pesan sukses jika berhasil
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                content: Text('Registrasi Berhasil! Silakan cek email untuk verifikasi.'),
+                                backgroundColor: Colors.green,
+                              ));
+                              Navigator.pop(context); // Kembali ke halaman login
+                            }
+
+                          } catch (e) {
+                            // Tampilkan pesan error jika gagal
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text('Error: ${e.toString()}'),
+                                backgroundColor: Colors.red,
+                              ));
+                            }
                           }
                         },
                         style: ElevatedButton.styleFrom(
