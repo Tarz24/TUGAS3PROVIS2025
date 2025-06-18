@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:tugas_provis/supabase_client.dart'; 
 void main() {
   runApp(const LoginScreen());
 }
@@ -103,8 +103,33 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 40),
                       ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushReplacementNamed(context, '/menu');
+                        onPressed: () async { // Tambahkan 'async' karena kita akan memanggil Supabase
+                          // Ambil input dari text field
+                          final email = emailController.text.trim();
+                          final password = passwordController.text.trim();
+
+                          try {
+                            // Coba lakukan sign in dengan Supabase
+                            await supabase.auth.signInWithPassword(
+                              email: email,
+                              password: password,
+                            );
+
+                            // Jika kode di atas berhasil, tidak akan ada error, dan kita bisa lanjut.
+                            // Pindah ke halaman menu jika widget masih ada di tree.
+                            if (mounted) {
+                              Navigator.pushReplacementNamed(context, '/menu');
+                            }
+                          } catch (e) {
+                            // Jika ada error (misal: password salah), tangkap di sini.
+                            // Tampilkan pesan error di bagian bawah layar.
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: const Text('Login gagal: Email atau password salah.'),
+                                backgroundColor: Theme.of(context).colorScheme.error,
+                              ));
+                            }
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
