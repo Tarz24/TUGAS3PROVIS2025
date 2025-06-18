@@ -1,6 +1,6 @@
 // Tambahan di bagian atas tetap sama
 import 'package:flutter/material.dart';
-
+import 'package:tugas_provis/supabase_client.dart';
 class MenuScreen extends StatefulWidget {
   const MenuScreen({Key? key}) : super(key: key);
 
@@ -81,406 +81,96 @@ class _MenuScreenState extends State<MenuScreen> {
                   ),
 
                   // Produk 1
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 100,
-                                height: 100,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                    image: AssetImage('assets/images/tenda.jpg'),
-                                    fit: BoxFit.cover,
-                                  ),
-                                  border: Border.all(color: Colors.black, style: BorderStyle.solid),
-                                ),
+                 // Letakkan FutureBuilder ini di dalam Column, setelah "Well hello, there" Text
+                  FutureBuilder<List<Map<String, dynamic>>>(
+                    // Ambil semua data dari tabel 'products'
+                    future: supabase.from('products').select(),
+                    builder: (context, snapshot) {
+                      // Tampilkan ikon loading jika data sedang diambil
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
+                      // Tampilkan pesan jika tidak ada data
+                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const Center(child: Text('Tidak ada produk tersedia.'));
+                      }
+
+                      // Jika data ada, simpan ke dalam variabel
+                      final products = snapshot.data!;
+
+                      // Gunakan ListView.builder untuk menampilkan setiap produk
+                      return ListView.builder(
+                        shrinkWrap: true, // Wajib di dalam SingleChildScrollView
+                        physics: const NeverScrollableScrollPhysics(), // Wajib di dalam SingleChildScrollView
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          final product = products[index];
+
+                          // Di sini kita gunakan kembali struktur UI Anda yang sudah ada,
+                          // tetapi dengan data dinamis dari 'product'.
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                            child: Container(
+                              padding: const EdgeInsets.all(8.0),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(15.0),
                               ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.only(right: 4.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            padding: EdgeInsets.all(6.0),
-                                            decoration: BoxDecoration(
-                                              color: Color.fromARGB(255, 255, 149, 0),
-                                              borderRadius: BorderRadius.circular(5.0),
-                                            ),
-                                            child: Text("Hot Deal", style: TextStyle(color: Colors.black)),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Container(padding: EdgeInsets.all(6.0),
-                                            decoration: BoxDecoration(
-                                              color: Color.fromARGB(255, 84, 255, 0),
-                                              borderRadius: BorderRadius.circular(5.0),
-                                            ),
-                                            child: Text("Recommended", style: TextStyle(color: Colors.black)),
-                                          ),
-                                        ],
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    width: 100,
+                                    height: 100,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                        // GANTI dari AssetImage menjadi NetworkImage
+                                        image: NetworkImage(product['image_url'] ?? 'URL_GAMBAR_DEFAULT_JIKA_NULL'),
+                                        fit: BoxFit.cover,
                                       ),
-                                      const SizedBox(height: 3),
-                                      const Text(
-                                        'Tenda Camping Consina',
-                                        style: TextStyle(
-                                          fontSize: 18
-                                        ),
-                                      ),
-                                      const SizedBox(height: 30),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
+                                      border: Border.all(color: Colors.black, style: BorderStyle.solid),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Container(
+                                      padding: const EdgeInsets.only(right: 4.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
+                                          // ... Anda bisa menambahkan logika untuk 'tags' di sini jika mau
+                                          const SizedBox(height: 3),
                                           Text(
-                                            "IDR 120.000/day",
-                                            style: TextStyle(fontSize: 18),
+                                            // GANTI teks statis dengan nama produk dari database
+                                            product['name'].toString(),
+                                            style: const TextStyle(fontSize: 18),
+                                          ),
+                                          const SizedBox(height: 30),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                // GANTI harga statis dengan harga dari database
+                                                "IDR ${product['price_per_day']}/day",
+                                                style: const TextStyle(fontSize: 18),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
-                                    ],
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
-                            ],
-                          )
-                        ),
-                      ],
-                    ),
-                  ),
-                  
-                  // Produk 2
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 100,
-                                height: 100,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                    image: AssetImage('assets/images/sepatu.jpg'),
-                                    fit: BoxFit.cover,
-                                  ),
-                                  border: Border.all(color: Colors.black, style: BorderStyle.solid),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.only(right: 4.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            padding: EdgeInsets.all(6.0),
-                                            decoration: BoxDecoration(
-                                              color: Color.fromARGB(255, 255, 149, 0),
-                                              borderRadius: BorderRadius.circular(5.0),
-                                            ),
-                                            child: Text("Hot Deal", style: TextStyle(color: Colors.black)),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Container(padding: EdgeInsets.all(6.0),
-                                            decoration: BoxDecoration(
-                                              color: Color.fromARGB(255, 84, 255, 0),
-                                              borderRadius: BorderRadius.circular(5.0),
-                                            ),
-                                            child: Text("Recommended", style: TextStyle(color: Colors.black)),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 3),
-                                      const Text(
-                                        'Sepatu Outdoor OWEN',
-                                        style: TextStyle(
-                                          fontSize: 18
-                                        ),
-                                      ),
-                                      const SizedBox(height: 30),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            "IDR 45.000/day",
-                                            style: TextStyle(fontSize: 18),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                        ),
-                      ],
-                    ),
+                            ),
+                          );
+                        },
+                      );
+                    },
                   ),
 
-                  // Produk 3
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 100,
-                                height: 100,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                    image: AssetImage('assets/images/tas.jpg'),
-                                    fit: BoxFit.cover,
-                                  ),
-                                  border: Border.all(color: Colors.black, style: BorderStyle.solid),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.only(right: 4.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            padding: EdgeInsets.all(6.0),
-                                            decoration: BoxDecoration(
-                                              color: Color.fromARGB(255, 255, 149, 0),
-                                              borderRadius: BorderRadius.circular(5.0),
-                                            ),
-                                            child: Text("Hot Deal", style: TextStyle(color: Colors.black)),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 3),
-                                      const Text(
-                                        'Carrier 55+5 L Bahan Cordura',
-                                        style: TextStyle(
-                                          fontSize: 18
-                                        ),
-                                      ),
-                                      const SizedBox(height: 30),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            "IDR 55.000/day",
-                                            style: TextStyle(fontSize: 18),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Produk 4
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 100,
-                                height: 100,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                    image: AssetImage('assets/images/sleeping_bag.jpg'),
-                                    fit: BoxFit.cover,
-                                  ),
-                                  border: Border.all(color: Colors.black, style: BorderStyle.solid),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.only(right: 4.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            padding: EdgeInsets.all(6.0),
-                                            decoration: BoxDecoration(
-                                              color: Color.fromARGB(255, 255, 149, 0),
-                                              borderRadius: BorderRadius.circular(5.0),
-                                            ),
-                                            child: Text("Hot Deal", style: TextStyle(color: Colors.black)),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Container(padding: EdgeInsets.all(6.0),
-                                            decoration: BoxDecoration(
-                                              color: Color.fromARGB(255, 84, 255, 0),
-                                              borderRadius: BorderRadius.circular(5.0),
-                                            ),
-                                            child: Text("Recommended", style: TextStyle(color: Colors.black)),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 3),
-                                      const Text(
-                                        'Sleepingbag Polar Tebal+Bantal',
-                                        style: TextStyle(
-                                          fontSize: 18
-                                        ),
-                                      ),
-                                      const SizedBox(height: 30),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            "IDR 25.000/day",
-                                            style: TextStyle(fontSize: 18),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Produk 5
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 100,
-                                height: 100,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                    image: AssetImage('assets/images/sleeping_bag4.jpg'),
-                                    fit: BoxFit.cover,
-                                  ),
-                                  border: Border.all(color: Colors.black, style: BorderStyle.solid),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.only(right: 4.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            padding: EdgeInsets.all(6.0),
-                                            decoration: BoxDecoration(
-                                              color: Color.fromARGB(255, 255, 149, 0),
-                                              borderRadius: BorderRadius.circular(5.0),
-                                            ),
-                                            child: Text("Hot Deal", style: TextStyle(color: Colors.black)),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Container(padding: EdgeInsets.all(6.0),
-                                            decoration: BoxDecoration(
-                                              color: Color.fromARGB(255, 84, 255, 0),
-                                              borderRadius: BorderRadius.circular(5.0),
-                                            ),
-                                            child: Text("Recommended", style: TextStyle(color: Colors.black)),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 3),
-                                      const Text(
-                                        'L.L.Bean Adventure 30° Sleeping Bag',
-                                        style: TextStyle(
-                                          fontSize: 18
-                                        ),
-                                      ),
-                                      const SizedBox(height: 30),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            "IDR 30.000/day",
-                                            style: TextStyle(fontSize: 18),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                        ),
-                      ],
-                    ),
-                  ),
 
                   // Chat box
                   Container(
