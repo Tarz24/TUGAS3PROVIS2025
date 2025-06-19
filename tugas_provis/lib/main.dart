@@ -1,19 +1,20 @@
-// lib/main.dart (Dummy untuk Uji Coba Tabel Notes)
+// lib/main.dart
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:tugas_provis/search.dart';
-import 'package:tugas_provis/view/Authentication/auth_gate.dart';
-import 'package:tugas_provis/view/Authentication/login.dart';
-import 'package:tugas_provis/view/Authentication/register.dart';
-import 'package:tugas_provis/view/Menu/produk.dart';
-import 'package:tugas_provis/viewmodel/auth_viewmodel.dart';
+
+// Import yang disesuaikan dengan struktur baru
+import 'package:tugas_provis/auth_gate.dart';
+import 'package:tugas_provis/features/authentication/view/login.dart';
+import 'package:tugas_provis/features/authentication/view/register.dart';
+import 'package:tugas_provis/features/home/view/menu.dart';
+import 'package:tugas_provis/features/product/view/produk.dart';
+import 'package:tugas_provis/viewmodels/auth_viewmodel.dart';
+import 'package:tugas_provis/viewmodels/product_viewmodel.dart';
 
 import 'dart:async';
-
-import 'package:tugas_provis/viewmodel/product_viewmodel.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,7 +39,6 @@ class MyApp extends StatelessWidget {
     // Daftarkan semua ViewModel di sini menggunakan MultiProvider
     return MultiProvider(
       providers: [
-        // Daftarkan ViewModel lain di sini jika ada
         ChangeNotifierProvider(create: (context) => AuthViewModel()),
         ChangeNotifierProvider(create: (context) => ProductViewModel()),
       ],
@@ -51,11 +51,12 @@ class MyApp extends StatelessWidget {
         ),
         home: const SplashScreen(), // Halaman utama kita
         routes: {
-        '/login': (context) => const LoginScreen(),
-        '/register': (context) => const RegisterScreen(),
-        '/menu': (context) => const MenuScreen(),
-        '/product-detail': (context) => const ProductPage(),
-      },
+            // Rute disesuaikan dengan import yang benar
+            '/login': (context) => const LoginScreen(),
+            '/register': (context) => const RegisterScreen(),
+            '/menu': (context) => const MenuScreen(),
+            '/product-detail': (context) => const ProductPage(),
+        },
       ),
     );
   }
@@ -76,6 +77,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(const Duration(seconds: 5), () {
       Navigator.pushReplacement(
         context,
+        // Navigasi ke AuthGate setelah SplashScreen
         MaterialPageRoute(builder: (context) => const AuthGate()),
       );
     });

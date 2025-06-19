@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tugas_provis/viewmodel/auth_viewmodel.dart';
+import 'package:tugas_provis/viewmodels/auth_viewmodel.dart';
 
 void main() {
   runApp(const LoginScreen());

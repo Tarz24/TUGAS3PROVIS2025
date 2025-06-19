@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:tugas_provis/model/product_model.dart';
+import 'package:tugas_provis/models/product_model.dart';
 import 'package:tugas_provis/services/supabase_services.dart';
 
 class ProductViewModel extends ChangeNotifier {

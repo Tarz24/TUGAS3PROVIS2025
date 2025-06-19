@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../Menu/menu.dart'; // Ganti dengan halaman utama Anda
-import 'login.dart';
+// Import yang disesuaikan dengan struktur baru
+import 'features/home/view/menu.dart';
+import 'features/authentication/view/login.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});

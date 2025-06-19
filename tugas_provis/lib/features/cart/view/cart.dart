@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tugas_provis/cart_item.dart';
+// Import yang disesuaikan dengan struktur baru
+import '../widgets/cart_item.dart';
 
 class KeranjangPage extends StatelessWidget {
   const KeranjangPage({super.key});
@@ -87,4 +88,3 @@ class KeranjangPage extends StatelessWidget {
     );
   }
 }
-

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tugas_provis/viewmodel/product_viewmodel.dart';
+import 'package:tugas_provis/viewmodels/product_viewmodel.dart';
 
 class ProductPage extends StatefulWidget {
 
