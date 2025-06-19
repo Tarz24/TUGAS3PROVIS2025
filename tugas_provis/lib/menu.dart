@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:tugas_provis/cart.dart';
 import 'package:tugas_provis/checkout.dart';
 import 'package:tugas_provis/produk.dart';
-import 'package:tugas_provis/profile.dart'; // <-- TAMBAHKAN IMPORT INI
+import 'package:tugas_provis/profile.dart';
+import 'package:tugas_provis/rentals.dart';
 import 'package:tugas_provis/supabase_client.dart';
 
 class MenuScreen extends StatefulWidget {
@@ -288,7 +289,6 @@ class _MenuScreenState extends State<MenuScreen> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        // ===== PERUBAHAN DI SINI =====
                         IconButton(
                           icon: const Icon(Icons.person, color: Colors.white),
                           onPressed: () {
@@ -297,6 +297,7 @@ class _MenuScreenState extends State<MenuScreen> {
                               MaterialPageRoute(builder: (context) => const ProfilePage()),
                             );
                           },
+                          tooltip: 'Profil',
                         ),
                         const SizedBox(height: 20),
                         IconButton(
@@ -308,18 +309,28 @@ class _MenuScreenState extends State<MenuScreen> {
                               MaterialPageRoute(builder: (context) => const KeranjangPage()),
                             );
                           },
+                          tooltip: 'Keranjang',
+                        ),
+                        const SizedBox(height: 20),
+                        // ===== PERUBAHAN DI SINI =====
+                        IconButton(
+                          icon: const Icon(Icons.shopping_bag, // atau Icons.receipt_long
+                              color: Colors.white),
+                          onPressed: () {
+                            // Navigasi ke halaman Rental
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const RentalPage()),
+                            );
+                          },
+                          tooltip: 'Barang Sewaan Saya',
                         ),
                         // ===== AKHIR PERUBAHAN =====
                         const SizedBox(height: 20),
                         IconButton(
-                          icon: const Icon(Icons.shopping_bag,
-                              color: Colors.white),
-                          onPressed: () {},
-                        ),
-                        const SizedBox(height: 20),
-                        IconButton(
                           icon: const Icon(Icons.chat, color: Colors.white),
                           onPressed: () {},
+                          tooltip: 'Chat',
                         ),
                       ],
                     ),
