@@ -1,0 +1,2 @@
+D:/codingan/FluterApps/TUGAS2PROVIS2025/tugas_provis/android/app/.cxx/Debug/5i1t4p6u/x86_64/CMakeFiles/edit_cache.dir
+D:/codingan/FluterApps/TUGAS2PROVIS2025/tugas_provis/android/app/.cxx/Debug/5i1t4p6u/x86_64/CMakeFiles/rebuild_cache.dir
