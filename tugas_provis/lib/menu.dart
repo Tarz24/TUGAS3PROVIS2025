@@ -1,5 +1,7 @@
 // lib/menu.dart
 
+// TAMBAHKAN IMPORT untuk halaman search yang akan kita buat
+import 'package:tugas_provis/search.dart'; 
 import 'package:flutter/material.dart';
 import 'package:tugas_provis/cart.dart';
 import 'package:tugas_provis/checkout.dart';
@@ -7,6 +9,7 @@ import 'package:tugas_provis/produk.dart';
 import 'package:tugas_provis/profile.dart';
 import 'package:tugas_provis/rentals.dart';
 import 'package:tugas_provis/supabase_client.dart';
+
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({Key? key}) : super(key: key);
@@ -26,10 +29,9 @@ class _MenuScreenState extends State<MenuScreen> {
         child: SingleChildScrollView(
           child: Stack(
             children: [
-              // === Konten utama ===
               Column(
                 children: [
-                  // Header
+                  // Header...
                   Container(
                     padding: const EdgeInsets.fromLTRB(10, 8, 0, 8),
                     color: const Color(0xFF0D3B66),
@@ -55,30 +57,37 @@ class _MenuScreenState extends State<MenuScreen> {
                     ),
                   ),
 
-                  // Search bar
-                  Container(
-                    margin: const EdgeInsets.all(10),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(100, 13, 59, 102),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Row(
-                      children: const [
-                        Expanded(
-                          child: Text(
-                            '',
-                            style: TextStyle(color: Colors.white),
+                  // ===== PERUBAHAN DI SINI =====
+                  // Bungkus Container search bar dengan GestureDetector
+                  GestureDetector(
+                    onTap: () {
+                      // Navigasi ke halaman SearchPage
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const SearchPage()),
+                      );
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 15), // Padding disesuaikan
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(100, 13, 59, 102),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.search, color: Colors.white70),
+                          const SizedBox(width: 10),
+                          const Text(
+                            'Cari peralatan kemah...', // Tambahkan placeholder text
+                            style: TextStyle(color: Colors.white70, fontSize: 16),
                           ),
-                        ),
-                        Image(
-                          image: AssetImage('assets/images/searchicon.png'),
-                          height: 50,
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
+                  // ===== AKHIR PERUBAHAN =====
 
                   const Padding(
                     padding: EdgeInsets.only(bottom: 12.0),
@@ -87,8 +96,9 @@ class _MenuScreenState extends State<MenuScreen> {
                       style: TextStyle(fontSize: 20),
                     ),
                   ),
-
-                  // Daftar Produk Dinamis
+                  
+                  // Daftar produk dinamis Anda...
+                  // (Kode FutureBuilder Anda di sini, tidak perlu diubah)
                   FutureBuilder<List<Map<String, dynamic>>>(
                     future: supabase.from('products').select(),
                     builder: (context, snapshot) {
@@ -229,7 +239,8 @@ class _MenuScreenState extends State<MenuScreen> {
                       );
                     },
                   ),
-                  // Chat box
+
+                   // Chat box...
                   Container(
                     width: double.infinity,
                     margin: const EdgeInsets.all(16),
@@ -253,8 +264,8 @@ class _MenuScreenState extends State<MenuScreen> {
                   ),
                 ],
               ),
-
-              // === Sidebar Kanan dengan tombol X ===
+              
+              // Sidebar...
               if (showSidebar)
                 Align(
                   alignment: Alignment.topRight,
@@ -312,12 +323,10 @@ class _MenuScreenState extends State<MenuScreen> {
                           tooltip: 'Keranjang',
                         ),
                         const SizedBox(height: 20),
-                        // ===== PERUBAHAN DI SINI =====
                         IconButton(
-                          icon: const Icon(Icons.shopping_bag, // atau Icons.receipt_long
+                          icon: const Icon(Icons.shopping_bag,
                               color: Colors.white),
                           onPressed: () {
-                            // Navigasi ke halaman Rental
                             Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) => const RentalPage()),
@@ -325,7 +334,6 @@ class _MenuScreenState extends State<MenuScreen> {
                           },
                           tooltip: 'Barang Sewaan Saya',
                         ),
-                        // ===== AKHIR PERUBAHAN =====
                         const SizedBox(height: 20),
                         IconButton(
                           icon: const Icon(Icons.chat, color: Colors.white),
