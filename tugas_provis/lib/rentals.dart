@@ -1,144 +1,139 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Package untuk format tanggal
+import 'package:tugas_provis/supabase_client.dart';
 
-void main() {
-  runApp(MyApp());
-}
+class RentalPage extends StatefulWidget {
+  const RentalPage({super.key});
 
-class MyApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Rental App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: RentalPage(),
-    );
-  }
+  State<RentalPage> createState() => _RentalPageState();
 }
 
-class RentalPage extends StatelessWidget {
-  final List<RentalItem> items = [
-    RentalItem(
-      image: 'assets/images/tenda.jpg',
-      title: 'Tenda Camping Consina',
-      duration: '3 days',
-      durationColor: Colors.green,
-    ),
-    RentalItem(
-      image: 'assets/images/sleeping_bag.jpg',
-      title: 'Sleepingbag Polar\nTebal + Bantal',
-      duration: '2 days',
-      durationColor: Colors.orange,
-    ),
-    RentalItem(
-      image: 'assets/images/sepatu.jpg',
-      title: 'Sepatu Outdoor OWEN',
-      duration: '6 Hours',
-      durationColor: Colors.red,
-    ),
-  ];
+class _RentalPageState extends State<RentalPage> {
+  late Future<List<Map<String, dynamic>>> _rentalsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRentals();
+  }
+
+  // Fungsi untuk mengambil data dari tabel 'rentals'
+  void _loadRentals() {
+    _rentalsFuture = supabase
+        .from('rentals')
+        .select('*, products(*)') // Ambil data rental DAN produk terkait
+        .eq('user_id', supabase.auth.currentUser!.id)
+        .order('created_at', ascending: false); // Urutkan dari yang terbaru
+  }
+
+  // Fungsi untuk mendapatkan warna status
+  Color _getStatusColor(String? status) {
+    switch (status?.toLowerCase()) {
+      case 'completed':
+        return Colors.green;
+      case 'pending':
+        return Colors.orange;
+      case 'cancelled':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(
-           color: Colors.white, //change your color here
+        iconTheme: const IconThemeData(
+          color: Colors.white,
         ),
-        leading: Icon(Icons.arrow_back),
-        title: Center(child: Icon(Icons.shopping_bag_outlined)),
-        actions: [Icon(Icons.menu)],
-        backgroundColor: Color(0xFF083C63),
+        title: const Text('Riwayat Penyewaan', style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xFF083C63),
+        centerTitle: true,
       ),
       body: Container(
-        color: Color(0xFFFFF5D1),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.grey[400],
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Text(
-                'Your Rentals',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: ListView.builder(
-                itemCount: items.length,
-                padding: const EdgeInsets.all(16),
-                itemBuilder: (context, index) {
-                  return RentalCard(item: items[index]);
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+        color: const Color(0xFFFFF5D1),
+        child: FutureBuilder<List<Map<String, dynamic>>>(
+          future: _rentalsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
 
-class RentalItem {
-  final String image;
-  final String title;
-  final String duration;
-  final Color durationColor;
+            final rentals = snapshot.data!;
 
-  RentalItem({
-    required this.image,
-    required this.title,
-    required this.duration,
-    required this.durationColor,
-  });
-}
+            if (rentals.isEmpty) {
+              return const Center(
+                child: Text('Anda belum pernah menyewa barang.',
+                    style: TextStyle(fontSize: 18)),
+              );
+            }
 
-class RentalCard extends StatelessWidget {
-  final RentalItem item;
+            return ListView.builder(
+              itemCount: rentals.length,
+              padding: const EdgeInsets.all(16),
+              itemBuilder: (context, index) {
+                final rental = rentals[index];
+                final product = rental['products'];
+                
+                // Format tanggal agar lebih mudah dibaca
+                final startDate = DateFormat('d MMM yyyy').format(DateTime.parse(rental['start_date']));
+                final endDate = DateFormat('d MMM yyyy').format(DateTime.parse(rental['end_date']));
 
-  const RentalCard({Key? key, required this.item}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            ClipOval(
-              child: Image.asset(
-                item.image,
-                width: 70,
-                height: 70,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                item.title,
-                style: const TextStyle(fontSize: 16),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: item.durationColor,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                item.duration,
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        ClipOval(
+                          child: Image.network(
+                            product?['image_url'] ?? 'https://placehold.co/70x70/png?text=N/A',
+                            width: 70,
+                            height: 70,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                product?['name'] ?? 'Produk tidak ditemukan',
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 4),
+                              Text('Sewa: $startDate - $endDate'),
+                              Text('Jumlah: ${rental['quantity']}'),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: _getStatusColor(rental['status']),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            rental['status']?.toString().toUpperCase() ?? 'N/A',
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          },
         ),
       ),
     );
