@@ -12,7 +12,7 @@ class ProductPage extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductPage> {
   String selectedVariant = "2 Orang";
-
+  
   @override
   void initState() {
     super.initState();

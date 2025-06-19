@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 // Import yang disesuaikan dengan struktur baru
 import 'package:tugas_provis/features/home/widgets/product_card.dart';
 import 'package:tugas_provis/viewmodels/product_viewmodel.dart';
-import 'package:tugas_provis/viewmodels/profile_viewmodel.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({Key? key}) : super(key: key);
@@ -20,7 +19,6 @@ class _MenuScreenState extends State<MenuScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ProductViewModel>().fetchProducts();
-      context.read<ProfileViewModel>().fetchProfile();
     });
   }
 

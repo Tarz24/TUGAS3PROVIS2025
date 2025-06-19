@@ -16,11 +16,13 @@ class ProfileViewModel extends ChangeNotifier {
   Future<void> fetchProfile() async {
     _isLoading = true;
     _errorMessage = null;
+    _profile = null;
     notifyListeners();
 
     try {
       // Panggil service untuk mendapatkan profil
       _profile = await _supabaseService.getProfile();
+      print("DEBUG (ViewModel): Hasil dari service adalah -> $_profile");
     } catch (e) {
       _errorMessage = e.toString();
     } finally {

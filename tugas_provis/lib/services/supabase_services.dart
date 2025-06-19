@@ -48,23 +48,36 @@ class SupabaseService {
   }
 
    // --- FUNGSI AMBIL PROFIL PENGGUNA ---
-  Future<ProfileModel> getProfile() async {
-    try {
-      final user = _client.auth.currentUser;
-      if (user == null) {
-        throw Exception("Pengguna tidak login!");
-      }
+  Future<ProfileModel?> getProfile() async {
+    print("DEBUG (Service): Fungsi getProfile() dimulai.");
+    
+    final user = _client.auth.currentUser;
 
-      // Ambil data dari tabel 'profiles' berdasarkan id pengguna
+    if (user == null) {
+      print("DEBUG (Service): KESIMPULAN -> Pengguna tidak login. Proses dihentikan.");
+      return null;
+    }
+
+    print("DEBUG (Service): User ditemukan, ID: ${user.id}.");
+    
+    try {
+      print("DEBUG (Service): Akan menjalankan query ke Supabase...");
+      
+      // Kemungkinan besar proses menggantung di baris 'await' di bawah ini
       final response = await _client
           .from('profiles')
           .select()
           .eq('id', user.id)
-          .single(); // .single() untuk ambil satu baris
-
+          .single(); 
+      
+      // Jika print di bawah ini muncul, berarti query berhasil
+      print("DEBUG (Service): Query ke Supabase BERHASIL. Response: $response");
       return ProfileModel.fromJson(response);
+
     } catch (e) {
-      throw Exception('Gagal mengambil data profil: $e');
+      // Jika ada error dari Supabase, akan tertangkap di sini
+      print("DEBUG (Service): Query ke Supabase GAGAL. Error: $e");
+      return null;
     }
   }
 

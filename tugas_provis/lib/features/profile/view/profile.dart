@@ -3,7 +3,25 @@ import 'package:provider/provider.dart';
 import 'package:tugas_provis/viewmodels/auth_viewmodel.dart';
 import 'package:tugas_provis/viewmodels/profile_viewmodel.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({Key? key}) : super(key: key);
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  @override
+  void initState() {
+    super.initState();
+    // Panggil fungsi untuk mengambil data saat halaman pertama kali dibangun.
+    // Menggunakan addPostFrameCallback adalah cara aman untuk memastikan 'context' sudah siap.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Gunakan context.read karena ini adalah aksi satu kali dan tidak perlu memantau perubahan di initState.
+      context.read<ProfileViewModel>().fetchProfile();
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     // Pantau perubahan pada AuthViewModel dan ProfileViewModel
@@ -72,7 +90,6 @@ class ProfilePage extends StatelessWidget {
           else
             // Tampilan jika data gagal dimuat
             const Text('Gagal memuat profil'),
-
           SizedBox(height: 20),
           ProfileButton(
             icon: Icons.notifications,

@@ -36,6 +36,7 @@ class ProductViewModel extends ChangeNotifier {
 
     try {
       _selectedProduct = await _supabaseService.getProductById(id);
+      print("DEBUG (ViewModel): Hasil dari service adalah -> $_selectedProduct");
     } catch (e) {
       _errorMessage = e.toString();
     } finally {

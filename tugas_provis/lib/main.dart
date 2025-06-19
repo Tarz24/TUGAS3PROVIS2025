@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
             '/register': (context) => const RegisterScreen(),
             '/menu': (context) => const MenuScreen(),
             '/product-detail': (context) => const ProductPage(),
-            '/profile': (context) => ProfilePage(),
+            '/profile': (context) => const ProfilePage(),
         },
       ),
     );

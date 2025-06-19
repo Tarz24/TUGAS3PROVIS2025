@@ -3,8 +3,8 @@ class ProfileModel {
   final String id;
   final String? firstName; // Dibuat nullable jika bisa kosong
   final String? lastName;  // Dibuat nullable jika bisa kosong
-  final DateTime updatedAt;
-  final bool isAdmin;
+  final DateTime? updatedAt;
+  final bool? isAdmin;
 
   // 2. Constructor untuk membuat object ProfileModel secara manual
   ProfileModel({
@@ -21,8 +21,11 @@ class ProfileModel {
       id: json['id'] as String,
       firstName: json['first_name'] as String?, // Baca 'first_name' dari JSON
       lastName: json['last_name'] as String?,   // Baca 'last_name' dari JSON
-      updatedAt: DateTime.parse(json['updated_at'] as String), // Konversi String ke DateTime
-      isAdmin: json['is_admin'] as bool,       // Baca 'is_admin' dari JSON
+      updatedAt: json['updated_at'] == null 
+          ? null 
+          : DateTime.parse(json['updated_at'] as String),
+
+      isAdmin: json['is_admin'] as bool?,
     );
   }
 
@@ -33,7 +36,7 @@ class ProfileModel {
       'id': id,
       'first_name': firstName,
       'last_name': lastName,
-      'updated_at': updatedAt.toIso8601String(), // Konversi DateTime ke String
+      'updated_at': updatedAt?.toIso8601String(), // Konversi DateTime ke String
       'is_admin': isAdmin,
     };
   }
