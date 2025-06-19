@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tugas_provis/viewmodels/product_viewmodel.dart';
+import 'package:tugas_provis/viewmodels/cart_viewmodel.dart';
 
 class ProductPage extends StatefulWidget {
 
@@ -37,6 +38,8 @@ class _ProductDetailScreenState extends State<ProductPage> {
 
   @override
   Widget build(BuildContext context) {
+    
+
     final viewModel = context.watch<ProductViewModel>();
     // Tampilkan loading indicator jika sedang fetching
     if (viewModel.isLoading && viewModel.selectedProduct == null) {

@@ -15,6 +15,7 @@ import 'package:tugas_provis/features/profile/view/profile.dart';
 import 'package:tugas_provis/viewmodels/auth_viewmodel.dart';
 import 'package:tugas_provis/viewmodels/product_viewmodel.dart';
 import 'package:tugas_provis/viewmodels/profile_viewmodel.dart';
+import 'package:tugas_provis/viewmodels/cart_viewmodel.dart';
 
 import 'dart:async';
 
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => AuthViewModel()),
         ChangeNotifierProvider(create: (context) => ProductViewModel()),
         ChangeNotifierProvider(create: (context) => ProfileViewModel()),
+        ChangeNotifierProvider(create: (context) => CartViewModel()),
       ],
       child: MaterialApp(
         title: 'Tes Database MVVM',

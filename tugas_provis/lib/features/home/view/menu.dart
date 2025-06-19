@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 // Import yang disesuaikan dengan struktur baru
 import 'package:tugas_provis/features/home/widgets/product_card.dart';
 import 'package:tugas_provis/viewmodels/product_viewmodel.dart';
+import 'package:tugas_provis/models/product_model.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({Key? key}) : super(key: key);
@@ -13,6 +14,7 @@ class MenuScreen extends StatefulWidget {
 
 class _MenuScreenState extends State<MenuScreen> {
   bool showSidebar = false;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -23,9 +25,16 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     final productViewModel = context.watch<ProductViewModel>();
-
+  
   return Scaffold(
     backgroundColor: const Color(0xFFFDF2D0),
     body: SafeArea(
@@ -35,7 +44,7 @@ class _MenuScreenState extends State<MenuScreen> {
             Column(
               children: [
                 buildHeader(),
-                buildSearchBar(),
+                buildSearchBar(productViewModel), // Kirim viewModel ke search bar
                 const Padding(
                   padding: EdgeInsets.only(bottom: 12.0),
                   child: Text(
@@ -44,7 +53,10 @@ class _MenuScreenState extends State<MenuScreen> {
                   ),
                 ),
                 Expanded(
-                  child: buildProductList(productViewModel),
+                  // Tampilkan loading atau list produk
+                  child: productViewModel.isSearching
+                      ? const Center(child: CircularProgressIndicator())
+                      : buildProductList(productViewModel),
                 ),
                 // Chat box
                 Container(
@@ -107,34 +119,62 @@ class _MenuScreenState extends State<MenuScreen> {
     );
   }
 
-  // Widget untuk Search Bar (diekstrak agar rapi)
-  Widget buildSearchBar() {
+Widget buildSearchBar(ProductViewModel viewModel) {
     return Container(
       margin: const EdgeInsets.all(10),
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
       decoration: BoxDecoration(
-        color:Color.fromARGB(100, 13, 59, 102),
+        color: const Color.fromARGB(100, 13, 59, 102),
         borderRadius: BorderRadius.circular(30),
       ),
       child: Row(
-        children: const [
+        children: [
           Expanded(
-            child: Text(
-              '',
-              style: TextStyle(color: Colors.white),
+            child: TextField(
+              controller: _searchController,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'Cari produk...',
+                hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                border: InputBorder.none,
+                // Tambahkan tombol 'clear' jika ada teks
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, color: Colors.white),
+                        onPressed: () {
+                          _searchController.clear();
+                          viewModel.clearSearch(); // Bersihkan hasil pencarian di ViewModel
+                        },
+                      )
+                    : null,
+              ),
+              onChanged: (value) {
+                // Update UI tombol clear saat mengetik
+                setState(() {});
+              },
             ),
           ),
-          Image(
-            image: AssetImage('assets/images/searchicon.png'),
-            height: 50,
+          IconButton(
+            icon: const Icon(Icons.search, color: Colors.white, size: 30),
+            onPressed: () {
+              // Panggil fungsi search di ViewModel
+              viewModel.performSearch(_searchController.text.trim());
+              // Tutup keyboard
+              FocusScope.of(context).unfocus();
+            },
           ),
         ],
       ),
     );
   }
 
+  // Menampilkan daftar produk atau hasil pencarian
   Widget buildProductList(ProductViewModel viewModel) {
-    if (viewModel.isLoading) {
+    // Tentukan list mana yang akan ditampilkan
+    final bool isSearching = viewModel.searchResults.isNotEmpty || (_searchController.text.isNotEmpty && !viewModel.isSearching);
+    final List<ProductModel> productsToShow = isSearching ? viewModel.searchResults : viewModel.products;
+
+    if (viewModel.isLoading && !isSearching) {
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -142,16 +182,17 @@ class _MenuScreenState extends State<MenuScreen> {
       return Center(child: Text('Terjadi error: ${viewModel.errorMessage}'));
     }
 
-    if (viewModel.products.isEmpty) {
-      return const Center(child: Text('Belum ada produk yang tersedia.'));
+    if (productsToShow.isEmpty) {
+      return Center(
+          child: Text(isSearching
+              ? 'Produk tidak ditemukan.'
+              : 'Belum ada produk yang tersedia.'));
     }
 
-    // Gunakan ListView.builder untuk efisiensi
     return ListView.builder(
-      itemCount: viewModel.products.length,
+      itemCount: productsToShow.length,
       itemBuilder: (context, index) {
-        final product = viewModel.products[index];
-        // Panggil widget ProductCard yang sudah kita buat
+        final product = productsToShow[index];
         return ProductCard(product: product);
       },
     );

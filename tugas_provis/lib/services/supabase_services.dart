@@ -111,4 +111,23 @@ class SupabaseService {
       throw Exception('Gagal mengambil detail produk: $e');
     }
   }
+
+   Future<List<ProductModel>> searchProducts(String query) async {
+    try {
+      // Menggunakan .ilike() untuk pencarian case-insensitive
+      // Format '%$query%' berarti mencari teks yang mengandung query
+      final response = await _client
+          .from('products')
+          .select()
+          .ilike('name', '%$query%');
+
+      final productList = (response as List)
+          .map((json) => ProductModel.fromJson(json))
+          .toList();
+          
+      return productList;
+    } catch (e) {
+      throw Exception('Gagal mencari produk: $e');
+    }
+  }
 }
