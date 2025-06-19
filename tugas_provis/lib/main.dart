@@ -1,10 +1,21 @@
 // lib/main.dart (Dummy untuk Uji Coba Tabel Notes)
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:tugas_provis/search.dart';
+import 'package:tugas_provis/view/Authentication/auth_gate.dart';
+import 'package:tugas_provis/view/Authentication/login.dart';
+import 'package:tugas_provis/view/Authentication/register.dart';
+import 'package:tugas_provis/view/Menu/produk.dart';
+import 'package:tugas_provis/viewmodel/auth_viewmodel.dart';
 
-Future<void> main() async {
+import 'dart:async';
+
+import 'package:tugas_provis/viewmodel/product_viewmodel.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Muat environment variables dari file .env
@@ -16,89 +27,107 @@ Future<void> main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
-  runApp(const UjiCobaSupabaseApp());
+  runApp(const MyApp());
 }
 
-// Instance Supabase agar mudah diakses
-final supabase = Supabase.instance.client;
-
-class UjiCobaSupabaseApp extends StatelessWidget {
-  const UjiCobaSupabaseApp({Key? key}) : super(key: key);
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Uji Coba Tabel Notes',
-      theme: ThemeData.light(),
-      home: const HomePage(),
-      debugShowCheckedModeBanner: false,
+    // Daftarkan semua ViewModel di sini menggunakan MultiProvider
+    return MultiProvider(
+      providers: [
+        // Daftarkan ViewModel lain di sini jika ada
+        ChangeNotifierProvider(create: (context) => AuthViewModel()),
+        ChangeNotifierProvider(create: (context) => ProductViewModel()),
+      ],
+      child: MaterialApp(
+        title: 'Tes Database MVVM',
+        theme: ThemeData(
+          primarySwatch: Colors.teal,
+          useMaterial3: true,
+          fontFamily: 'Arial',
+        ),
+        home: const SplashScreen(), // Halaman utama kita
+        routes: {
+        '/login': (context) => const LoginScreen(),
+        '/register': (context) => const RegisterScreen(),
+        '/menu': (context) => const MenuScreen(),
+        '/product-detail': (context) => const ProductPage(),
+      },
+      ),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
-  // Future untuk mengambil semua data dari tabel 'notes'
-  final _future = supabase.from('notes').select();
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Set timer untuk pindah ke halaman login setelah 5 detik
+    Timer(const Duration(seconds: 5), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const AuthGate()),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Uji Baca Data dari Tabel "notes"'),
-      ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _future,
-        builder: (context, snapshot) {
-          // 1. Tampilkan loading spinner saat data sedang diambil
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          
-          // 2. Tampilkan pesan error jika terjadi masalah
-          if (snapshot.hasError) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text('TERJADI ERROR: ${snapshot.error}\n\n'
-                            'Pastikan:\n'
-                            '1. URL & Anon Key di file .env sudah benar.\n'
-                            '2. Nama tabel adalah "notes".\n'
-                            '3. RLS untuk tabel "notes" sudah dinonaktifkan.',
-                            style: const TextStyle(color: Colors.red)),
-              ),
-            );
-          }
-          
-          // 3. Tampilkan data jika berhasil diambil
-          final notes = snapshot.data!;
-          if (notes.isEmpty) {
-            return const Center(child: Text('Tabel "notes" kosong. Silakan isi data contoh terlebih dahulu di Supabase.'));
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(8.0),
-            itemCount: notes.length,
-            itemBuilder: (context, index) {
-              final note = notes[index];
-              return Card(
-                child: ListTile(
-                  title: Text(
-                    note['title'].toString(),
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(note['body'].toString()),
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/background.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 150,
+                height: 150,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
                 ),
-              );
-            },
-          );
-        },
+                child: Center(
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/images/logo.png',
+                        width: 100,
+                        height: 100,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
+              const Text(
+                'CAMPRENT™',
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 2,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

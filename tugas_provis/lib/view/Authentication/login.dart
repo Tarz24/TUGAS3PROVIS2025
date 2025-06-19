@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tugas_provis/viewmodel/auth_viewmodel.dart';
 
 void main() {
   runApp(const LoginScreen());
@@ -18,7 +20,53 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
 
   @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleLogin() async {
+    final email = emailController.text;
+    final password = passwordController.text;
+    bool formIsValid = true;
+
+    if (email.isEmpty || !email.contains('@')) {
+      // Bagaimana cara menampilkan error di bawah TextFormField email?
+      // Sangat rumit! Anda harus membuat state sendiri untuk pesan error.
+      print("Error: Email tidak valid");
+      formIsValid = false;
+    }
+    
+    if (password.isEmpty) {
+      // Bagaimana cara menampilkan error di bawah TextFormField password?
+      print("Error: Password kosong");
+      formIsValid = false;
+    }
+
+    if (formIsValid) {
+      await context.read<AuthViewModel>().signInWithEmailPassword(
+            emailController.text.trim(),
+            passwordController.text.trim(),
+          );
+
+      // Cek apakah ada error setelah mencoba login
+      final viewModel = context.read<AuthViewModel>();
+      if (viewModel.errorMessage != null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(viewModel.errorMessage!),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isLoading = context.watch<AuthViewModel>().isLoading;
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -103,9 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 40),
                       ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushReplacementNamed(context, '/menu');
-                        },
+                        onPressed: isLoading ? null : _handleLogin,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
                           padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
@@ -113,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text(
+                        child: isLoading ? const CircularProgressIndicator(color: Colors.white, strokeWidth: 2) : const Text(
                           'Login',
                           style: TextStyle(fontSize: 18, color: Colors.white),
                         ),

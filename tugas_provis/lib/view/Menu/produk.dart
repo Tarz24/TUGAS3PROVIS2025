@@ -1,22 +1,60 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(MaterialApp(
-    home: ProductPage(),
-    debugShowCheckedModeBanner: false,
-  ));
-}
+import 'package:provider/provider.dart';
+import 'package:tugas_provis/viewmodel/product_viewmodel.dart';
 
 class ProductPage extends StatefulWidget {
+
+  const ProductPage({Key? key}) : super(key: key); // Ubah konstruktor
+
   @override
-  _ProductPageState createState() => _ProductPageState();
+  State<ProductPage> createState() => _ProductDetailScreenState();
 }
 
-class _ProductPageState extends State<ProductPage> {
+class _ProductDetailScreenState extends State<ProductPage> {
   String selectedVariant = "2 Orang";
 
   @override
+  void initState() {
+    super.initState();
+    // Panggil ViewModel untuk mengambil data saat halaman pertama kali dibuka
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // 1. Ambil argumen dengan aman
+      final arguments = ModalRoute.of(context)?.settings.arguments;
+
+      // 2. Lakukan pengecekan tipe data sebelum digunakan
+      if (arguments is int) {
+        final int productId = arguments; // Sekarang kita punya ID yang aman
+        
+        // 3. Panggil ViewModel untuk mengambil data
+        context.read<ProductViewModel>().fetchProductById(productId);
+      } else {
+        // Handle jika argumen tidak dikirim atau tipenya salah
+        print("Error: Argumen productId tidak ditemukan atau tipe datanya salah.");
+        // Anda bisa mengatur pesan error di ViewModel di sini jika perlu
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<ProductViewModel>();
+    // Tampilkan loading indicator jika sedang fetching
+    if (viewModel.isLoading && viewModel.selectedProduct == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    // Tampilkan pesan error jika terjadi kegagalan
+    if (viewModel.errorMessage != null) {
+      return Center(child: Text('Error: ${viewModel.errorMessage}'));
+    }
+
+    // Tampilkan pesan jika produk tidak ditemukan
+    if (viewModel.selectedProduct == null) {
+      return const Center(child: Text('Produk tidak ditemukan.'));
+    }
+    
+    final product = viewModel.selectedProduct!;
+
     return Scaffold(
       backgroundColor: Color(0xFFFFF7D4),
       body: Stack(
@@ -27,8 +65,8 @@ class _ProductPageState extends State<ProductPage> {
               children: [
                 Stack(
                   children: [
-                    Image.asset(
-                      "assets/images/tenda.jpg",
+                    Image.network(
+                      product.imageUrl ?? 'https://via.placeholder.com/400',
                       fit: BoxFit.cover,
                       width: double.infinity,
                       height: 350,
@@ -50,18 +88,15 @@ class _ProductPageState extends State<ProductPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Row(
-                    children: [
-                      BadgeLabel(label: "HOT", color: Colors.orange),
-                      SizedBox(width: 8),
-                      BadgeLabel(label: "RECOMMENDED", color: Colors.green),
-                    ],
+                  child: Wrap( // Gunakan Wrap agar rapi jika tags banyak
+                    spacing: 8.0,
+                    children: product.tags.map((tag) => BadgeLabel(label: tag, color: _getColorForTag(tag))).toList(),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    "TENDA CAMPING CONSINA",
+                    product.name ?? 'Nama Produk',
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -69,7 +104,7 @@ class _ProductPageState extends State<ProductPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    "Barang berkualitas ya kak, kita pastikan QC sebelum kirim. Silakan langsung di pesan, pengiriman 1x24 jam ya ka.\n\nTenda camping otomatis untuk 2 - 4 orang.\nWarna: hijau, biru, oranye.\n\nNote:\nCantumkan warna cadangan saat order, jika stok kosong dikirim warna random sesuai stok yang ada. Pesanan tetap diproses kecuali ada keterangan cancel.",
+                    product.description ?? 'Tidak ada deskripsi.',
                     style: TextStyle(fontSize: 14, height: 1.5),
                   ),
                 ),
@@ -84,37 +119,20 @@ class _ProductPageState extends State<ProductPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Row(
-                    children: [
-                      VariantButton(
-                        label: "2 Orang",
-                        isSelected: selectedVariant == "2 Orang",
-                        onTap: () {
-                          setState(() {
-                            selectedVariant = "2 Orang";
-                          });
-                        },
-                      ),
-                      SizedBox(width: 10),
-                      VariantButton(
-                        label: "3 Orang",
-                        isSelected: selectedVariant == "3 Orang",
-                        onTap: () {
-                          setState(() {
-                            selectedVariant = "3 Orang";
-                          });
-                        },
-                      ),
-                      SizedBox(width: 10),
-                      VariantButton(
-                        label: "4 Orang",
-                        isSelected: selectedVariant == "4 Orang",
-                        onTap: () {
-                          setState(() {
-                            selectedVariant = "4 Orang";
-                          });
-                        },
-                      ),
-                    ],
+                    children: (product.variants?.keys ?? []).map((variantName) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: VariantButton(
+                          label: variantName,
+                          isSelected: selectedVariant == variantName,
+                          onTap: () {
+                            setState(() {
+                              selectedVariant = variantName;
+                            });
+                          },
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ),
               ],
@@ -182,5 +200,17 @@ class VariantButton extends StatelessWidget {
         elevation: isSelected ? 4 : 2,
       ),
     );
+  }
+}
+
+// Fungsi helper diletakkan di dalam class State yang sama
+Color _getColorForTag(String tag) {
+  switch (tag.toLowerCase()) {
+    case 'hot deal':
+      return Colors.orange;
+    case 'recommended':
+      return Colors.green;
+    default:
+      return Colors.grey.shade600;
   }
 }
