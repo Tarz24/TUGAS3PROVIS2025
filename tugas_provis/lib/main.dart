@@ -11,8 +11,10 @@ import 'package:tugas_provis/features/authentication/view/login.dart';
 import 'package:tugas_provis/features/authentication/view/register.dart';
 import 'package:tugas_provis/features/home/view/menu.dart';
 import 'package:tugas_provis/features/product/view/produk.dart';
+import 'package:tugas_provis/features/profile/view/profile.dart';
 import 'package:tugas_provis/viewmodels/auth_viewmodel.dart';
 import 'package:tugas_provis/viewmodels/product_viewmodel.dart';
+import 'package:tugas_provis/viewmodels/profile_viewmodel.dart';
 
 import 'dart:async';
 
@@ -41,6 +43,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => AuthViewModel()),
         ChangeNotifierProvider(create: (context) => ProductViewModel()),
+        ChangeNotifierProvider(create: (context) => ProfileViewModel()),
       ],
       child: MaterialApp(
         title: 'Tes Database MVVM',
@@ -56,6 +59,7 @@ class MyApp extends StatelessWidget {
             '/register': (context) => const RegisterScreen(),
             '/menu': (context) => const MenuScreen(),
             '/product-detail': (context) => const ProductPage(),
+            '/profile': (context) => ProfilePage(),
         },
       ),
     );

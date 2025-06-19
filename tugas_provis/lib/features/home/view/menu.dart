@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 // Import yang disesuaikan dengan struktur baru
 import 'package:tugas_provis/features/home/widgets/product_card.dart';
 import 'package:tugas_provis/viewmodels/product_viewmodel.dart';
+import 'package:tugas_provis/viewmodels/profile_viewmodel.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({Key? key}) : super(key: key);
@@ -19,6 +20,7 @@ class _MenuScreenState extends State<MenuScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ProductViewModel>().fetchProducts();
+      context.read<ProfileViewModel>().fetchProfile();
     });
   }
 
@@ -157,7 +159,7 @@ class _MenuScreenState extends State<MenuScreen> {
     );
   }
 
-  Widget buildSidebar() {
+   Widget buildSidebar() {
     return Align(
       alignment: Alignment.topRight,
       child: Container(
@@ -192,7 +194,10 @@ class _MenuScreenState extends State<MenuScreen> {
             const SizedBox(height: 10),
             IconButton(
               icon: const Icon(Icons.person, color: Colors.white),
-              onPressed: () {},
+              onPressed: () {
+                // Navigasi ke halaman profil
+                Navigator.pushNamed(context, '/profile');
+              },
             ),
             const SizedBox(height: 20),
             IconButton(

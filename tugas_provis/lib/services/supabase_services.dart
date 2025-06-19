@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tugas_provis/models/product_model.dart';
+import 'package:tugas_provis/models/profile_model.dart';
 
 class SupabaseService {
   final _client = Supabase.instance.client;
@@ -44,6 +45,27 @@ class SupabaseService {
   // --- FUNGSI LOGOUT ---
   Future<void> signOut() async {
     await _client.auth.signOut();
+  }
+
+   // --- FUNGSI AMBIL PROFIL PENGGUNA ---
+  Future<ProfileModel> getProfile() async {
+    try {
+      final user = _client.auth.currentUser;
+      if (user == null) {
+        throw Exception("Pengguna tidak login!");
+      }
+
+      // Ambil data dari tabel 'profiles' berdasarkan id pengguna
+      final response = await _client
+          .from('profiles')
+          .select()
+          .eq('id', user.id)
+          .single(); // .single() untuk ambil satu baris
+
+      return ProfileModel.fromJson(response);
+    } catch (e) {
+      throw Exception('Gagal mengambil data profil: $e');
+    }
   }
 
   // ... (fungsi lain seperti getProfile, getProducts, dll)
