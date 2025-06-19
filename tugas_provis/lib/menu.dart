@@ -146,147 +146,146 @@ class _MenuScreenState extends State<MenuScreen> {
                   
                   // Daftar produk dinamis Anda...
                   // (Kode FutureBuilder Anda di sini, tidak perlu diubah)
-                  FutureBuilder<List<Map<String, dynamic>>>(
-                    future: supabase.from('products').select(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Center(
-                            child: Text('Tidak ada produk tersedia.'));
-                      }
-                      final products = snapshot.data!;
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: products.length,
-                        itemBuilder: (context, index) {
-                          final product = products[index];
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      ProductPage(productId: product['id']),
-                                ),
-                              );
-                            },
-                            child: Card(
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 8.0),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15.0)),
-                              elevation: 4,
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          width: 100,
-                                          height: 100,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            image: DecorationImage(
-                                              image: NetworkImage(product[
-                                                      'image_url'] ??
-                                                  'https://placehold.co/100x100/png?text=No+Image'),
-                                              fit: BoxFit.cover,
+                  Expanded(
+                    child: FutureBuilder<List<Map<String, dynamic>>>(
+                      future: supabase.from('products').select(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return const Center(
+                              child: Text('Tidak ada produk tersedia.'));
+                        }
+                        final products = snapshot.data!;
+                        return ListView.builder(
+                          itemCount: products.length,
+                          itemBuilder: (context, index) {
+                            final product = products[index];
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ProductPage(productId: product['id']),
+                                  ),
+                                );
+                              },
+                              child: Card(
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 16.0, vertical: 8.0),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0)),
+                                elevation: 4,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            width: 100,
+                                            height: 100,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              image: DecorationImage(
+                                                image: NetworkImage(product[
+                                                        'image_url'] ??
+                                                    'https://placehold.co/100x100/png?text=No+Image'),
+                                                fit: BoxFit.cover,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                product['name'].toString(),
-                                                style: const TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                              const SizedBox(height: 8),
-                                              Text(
-                                                "IDR ${product['price_per_day']}/day",
-                                                style: const TextStyle(
-                                                    fontSize: 16,
-                                                    color:
-                                                        Colors.deepOrange),
-                                              ),
-                                            ],
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  product['name'].toString(),
+                                                  style: const TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                const SizedBox(height: 8),
+                                                Text(
+                                                  "IDR ${product['price_per_day']}/day",
+                                                  style: const TextStyle(
+                                                      fontSize: 16,
+                                                      color:
+                                                          Colors.deepOrange),
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(
-                                              Icons.add_shopping_cart,
-                                              color: Colors.blue),
-                                          tooltip: 'Tambah ke Keranjang',
-                                          onPressed: () async {
-                                            try {
-                                              await supabase
-                                                  .from('cart_items')
-                                                  .insert({
-                                                'user_id': supabase
-                                                    .auth.currentUser!.id,
-                                                'product_id': product['id'],
-                                              });
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(SnackBar(
-                                                content: Text(
-                                                    '${product['name']} ditambahkan ke keranjang.'),
-                                                backgroundColor:
-                                                    Colors.green,
-                                              ));
-                                            } catch (e) {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(const SnackBar(
-                                                content: Text(
-                                                    'Gagal menambahkan ke keranjang. Mungkin sudah ada?'),
-                                                backgroundColor: Colors.red,
-                                              ));
-                                            }
-                                          },
-                                        ),
-                                        const SizedBox(width: 8),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    CheckoutPage(
-                                                        product: product),
-                                              ),
-                                            );
-                                          },
-                                          child: const Text("Sewa"),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                        ],
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          IconButton(
+                                            icon: const Icon(
+                                                Icons.add_shopping_cart,
+                                                color: Colors.blue),
+                                            tooltip: 'Tambah ke Keranjang',
+                                            onPressed: () async {
+                                              try {
+                                                await supabase
+                                                    .from('cart_items')
+                                                    .insert({
+                                                  'user_id': supabase
+                                                      .auth.currentUser!.id,
+                                                  'product_id': product['id'],
+                                                });
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(SnackBar(
+                                                  content: Text(
+                                                      '${product['name']} ditambahkan ke keranjang.'),
+                                                  backgroundColor:
+                                                      Colors.green,
+                                                ));
+                                              } catch (e) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(const SnackBar(
+                                                  content: Text(
+                                                      'Gagal menambahkan ke keranjang. Mungkin sudah ada?'),
+                                                  backgroundColor: Colors.red,
+                                                ));
+                                              }
+                                            },
+                                          ),
+                                          const SizedBox(width: 8),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      CheckoutPage(
+                                                          product: product),
+                                                ),
+                                              );
+                                            },
+                                            child: const Text("Sewa"),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                      );
-                    },
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
-
                    // Chat box...
                   GestureDetector(
                     onTap: _launchWhatsAppKonsul, // Panggil fungsi yang sama dengan tombol di sidebar
