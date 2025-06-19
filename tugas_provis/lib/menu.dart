@@ -1,11 +1,12 @@
 // lib/menu.dart
 
 import 'package:flutter/material.dart';
-import 'package:tugas_provis/supabase_client.dart';
-// Import halaman yang akan kita tuju
-import 'package:tugas_provis/produk.dart';
+import 'package:tugas_provis/cart.dart';
 import 'package:tugas_provis/checkout.dart';
-import 'package:tugas_provis/cart.dart'; // Import halaman keranjang
+import 'package:tugas_provis/produk.dart';
+import 'package:tugas_provis/profile.dart'; // <-- TAMBAHKAN IMPORT INI
+import 'package:tugas_provis/supabase_client.dart';
+
 class MenuScreen extends StatefulWidget {
   const MenuScreen({Key? key}) : super(key: key);
 
@@ -27,7 +28,7 @@ class _MenuScreenState extends State<MenuScreen> {
               // === Konten utama ===
               Column(
                 children: [
-                  // Header (Kode Anda, tidak diubah)
+                  // Header
                   Container(
                     padding: const EdgeInsets.fromLTRB(10, 8, 0, 8),
                     color: const Color(0xFF0D3B66),
@@ -53,7 +54,7 @@ class _MenuScreenState extends State<MenuScreen> {
                     ),
                   ),
 
-                  // Search bar (Kode Anda, tidak diubah)
+                  // Search bar
                   Container(
                     margin: const EdgeInsets.all(10),
                     padding:
@@ -86,35 +87,26 @@ class _MenuScreenState extends State<MenuScreen> {
                     ),
                   ),
 
-                  // === BAGIAN YANG DIMODIFIKASI ===
-                  // Mengganti daftar produk dengan FutureBuilder yang interaktif
+                  // Daftar Produk Dinamis
                   FutureBuilder<List<Map<String, dynamic>>>(
                     future: supabase.from('products').select(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
                       }
-
                       if (!snapshot.hasData || snapshot.data!.isEmpty) {
                         return const Center(
                             child: Text('Tidak ada produk tersedia.'));
                       }
-
                       final products = snapshot.data!;
-
                       return ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: products.length,
                         itemBuilder: (context, index) {
                           final product = products[index];
-
-                          // Widget Kartu Produk Interaktif
                           return GestureDetector(
-                            // AKSI 1: Menekan seluruh kartu akan ke halaman detail
                             onTap: () {
-                              print(
-                                  'Navigasi ke detail produk ID: ${product['id']}');
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -133,7 +125,6 @@ class _MenuScreenState extends State<MenuScreen> {
                                 padding: const EdgeInsets.all(12.0),
                                 child: Column(
                                   children: [
-                                    // Bagian Atas: Gambar dan Info Produk
                                     Row(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -178,20 +169,15 @@ class _MenuScreenState extends State<MenuScreen> {
                                       ],
                                     ),
                                     const SizedBox(height: 12),
-                                    // Bagian Bawah: Tombol Aksi
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
-                                        // Tombol Add to Cart
                                         IconButton(
                                           icon: const Icon(
                                               Icons.add_shopping_cart,
                                               color: Colors.blue),
                                           tooltip: 'Tambah ke Keranjang',
                                           onPressed: () async {
-                                            // AKSI 2: Tambah ke Keranjang
-                                            print(
-                                                'Menambahkan produk ID: ${product['id']} ke keranjang');
                                             try {
                                               await supabase
                                                   .from('cart_items')
@@ -218,12 +204,8 @@ class _MenuScreenState extends State<MenuScreen> {
                                           },
                                         ),
                                         const SizedBox(width: 8),
-                                        // Tombol Sewa Sekarang
                                         ElevatedButton(
                                           onPressed: () {
-                                            // AKSI 3: Langsung ke Halaman Checkout
-                                            print(
-                                                'Checkout produk ID: ${product['id']}');
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
@@ -246,9 +228,7 @@ class _MenuScreenState extends State<MenuScreen> {
                       );
                     },
                   ),
-                  // === AKHIR BAGIAN YANG DIMODIFIKASI ===
-
-                  // Chat box (Kode Anda, tidak diubah)
+                  // Chat box
                   Container(
                     width: double.infinity,
                     margin: const EdgeInsets.all(16),
@@ -273,7 +253,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 ],
               ),
 
-              // Sidebar Kanan (Kode Anda, tidak diubah)
+              // === Sidebar Kanan dengan tombol X ===
               if (showSidebar)
                 Align(
                   alignment: Alignment.topRight,
@@ -308,22 +288,28 @@ class _MenuScreenState extends State<MenuScreen> {
                           ),
                         ),
                         const SizedBox(height: 10),
+                        // ===== PERUBAHAN DI SINI =====
                         IconButton(
                           icon: const Icon(Icons.person, color: Colors.white),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const ProfilePage()),
+                            );
+                          },
                         ),
                         const SizedBox(height: 20),
                         IconButton(
                           icon: const Icon(Icons.shopping_cart,
                               color: Colors.white),
                           onPressed: () {
-                            // Navigasi ke halaman KeranjangPage saat ditekan
                             Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) => const KeranjangPage()),
                             );
                           },
                         ),
+                        // ===== AKHIR PERUBAHAN =====
                         const SizedBox(height: 20),
                         IconButton(
                           icon: const Icon(Icons.shopping_bag,
