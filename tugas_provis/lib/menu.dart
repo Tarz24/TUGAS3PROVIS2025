@@ -9,7 +9,7 @@ import 'package:tugas_provis/produk.dart';
 import 'package:tugas_provis/profile.dart';
 import 'package:tugas_provis/rentals.dart';
 import 'package:tugas_provis/supabase_client.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({Key? key}) : super(key: key);
@@ -21,6 +21,53 @@ class MenuScreen extends StatefulWidget {
 class _MenuScreenState extends State<MenuScreen> {
   bool showSidebar = false;
 
+  // ===== FUNGSI BARU UNTUK MEMBUKA WHATSAPP =====
+  Future<void> _launchWhatsAppChat() async {
+    // Ganti nomor telepon ini dengan nomor WhatsApp admin/toko Anda
+    // Gunakan format internasional tanpa spasi, tanda kurung, atau '+'
+    const String phoneNumber = '6285775712437'; // Contoh: 62 untuk Indonesia
+    
+    // Pesan default yang akan muncul di WhatsApp
+    const String message = 'Halo, saya tertarik untuk menyewa peralatan kemah dari CAMPRENT.';
+    
+    // Buat URL WhatsApp
+    final Uri whatsappUrl = Uri.parse('https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}');
+
+    // Coba buka URL
+    if (await canLaunchUrl(whatsappUrl)) {
+      await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
+    } else {
+      // Tampilkan error jika gagal membuka WhatsApp
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Tidak dapat membuka WhatsApp. Pastikan aplikasi sudah terinstal.')),
+        );
+      }
+    }
+  }
+  Future<void> _launchWhatsAppKonsul() async {
+    // Ganti nomor telepon ini dengan nomor WhatsApp admin/toko Anda
+    // Gunakan format internasional tanpa spasi, tanda kurung, atau '+'
+    const String phoneNumber = '6285775712437'; // Contoh: 62 untuk Indonesia
+    
+    // Pesan default yang akan muncul di WhatsApp
+    const String message = 'Halo, saya ingin berkonsultasi tentang penyewaan peralatan kemah.';
+
+    // Buat URL WhatsApp
+    final Uri whatsappUrl = Uri.parse('https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}');
+
+    // Coba buka URL
+    if (await canLaunchUrl(whatsappUrl)) {
+      await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
+    } else {
+      // Tampilkan error jika gagal membuka WhatsApp
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Tidak dapat membuka WhatsApp. Pastikan aplikasi sudah terinstal.')),
+        );
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -241,31 +288,35 @@ class _MenuScreenState extends State<MenuScreen> {
                   ),
 
                    // Chat box...
-                  Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.all(16),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF3F6A89),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: const [
-                        Icon(Icons.chat_bubble_outline, color: Colors.white),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            'Baru pertama kali berkemah?\nbisa konsultasi dengan kami dulu lhoo',
-                            style: TextStyle(color: Colors.white),
+                  GestureDetector(
+                    onTap: _launchWhatsAppKonsul, // Panggil fungsi yang sama dengan tombol di sidebar
+                    child: Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF3F6A89),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: const [
+                          Icon(Icons.chat_bubble_outline, color: Colors.white),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'Baru pertama kali berkemah?\nBisa konsultasi dengan kami dulu lho!',
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
               
               // Sidebar...
+              // === Sidebar Kanan dengan tombol X ===
               if (showSidebar)
                 Align(
                   alignment: Alignment.topRight,
@@ -315,7 +366,7 @@ class _MenuScreenState extends State<MenuScreen> {
                           icon: const Icon(Icons.shopping_cart,
                               color: Colors.white),
                           onPressed: () {
-                            Navigator.push(
+                             Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) => const KeranjangPage()),
                             );
@@ -335,11 +386,13 @@ class _MenuScreenState extends State<MenuScreen> {
                           tooltip: 'Barang Sewaan Saya',
                         ),
                         const SizedBox(height: 20),
+                        // ===== PERUBAHAN DI SINI =====
                         IconButton(
                           icon: const Icon(Icons.chat, color: Colors.white),
-                          onPressed: () {},
-                          tooltip: 'Chat',
+                          onPressed: _launchWhatsAppChat, // Panggil fungsi WhatsApp
+                          tooltip: 'Hubungi Admin via WhatsApp',
                         ),
+                        // ===== AKHIR PERUBAHAN =====
                       ],
                     ),
                   ),
