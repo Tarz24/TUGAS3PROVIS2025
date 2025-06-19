@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Package untuk format tanggal
+import 'package:intl/intl.dart'; // Pastikan package ini sudah ada di pubspec.yaml
 import 'package:tugas_provis/supabase_client.dart';
 
 class RentalPage extends StatefulWidget {
@@ -18,28 +18,31 @@ class _RentalPageState extends State<RentalPage> {
     _loadRentals();
   }
 
-  // Fungsi untuk mengambil data dari tabel 'rentals'
   void _loadRentals() {
     _rentalsFuture = supabase
         .from('rentals')
-        .select('*, products(*)') // Ambil data rental DAN produk terkait
+        .select('*, products(*)')
         .eq('user_id', supabase.auth.currentUser!.id)
-        .order('created_at', ascending: false); // Urutkan dari yang terbaru
+        .order('created_at', ascending: false);
   }
 
-  // Fungsi untuk mendapatkan warna status
+  // ===== FUNGSI BARU UNTUK MENENTUKAN WARNA =====
+  // Fungsi ini akan mengembalikan warna yang berbeda berdasarkan teks status.
   Color _getStatusColor(String? status) {
     switch (status?.toLowerCase()) {
-      case 'completed':
-        return Colors.green;
+      case 'sewa':
+        return Colors.green; // Sewa = Hijau
       case 'pending':
-        return Colors.orange;
-      case 'cancelled':
-        return Colors.red;
+        return Colors.orange; // Pending = Oranye
+      case 'ditolak':
+        return Colors.red; // Ditolak = Merah
+      case 'selesai':
+        return Colors.grey.shade600; // Selesai = Abu-abu
       default:
-        return Colors.grey;
+        return Colors.blueGrey; // Status lain (jika ada)
     }
   }
+  // ===== AKHIR FUNGSI BARU =====
 
   @override
   Widget build(BuildContext context) {
@@ -79,8 +82,8 @@ class _RentalPageState extends State<RentalPage> {
               itemBuilder: (context, index) {
                 final rental = rentals[index];
                 final product = rental['products'];
+                final rentalStatus = rental['status']?.toString() ?? 'N/A';
                 
-                // Format tanggal agar lebih mudah dibaca
                 final startDate = DateFormat('d MMM yyyy').format(DateTime.parse(rental['start_date']));
                 final endDate = DateFormat('d MMM yyyy').format(DateTime.parse(rental['end_date']));
 
@@ -88,6 +91,7 @@ class _RentalPageState extends State<RentalPage> {
                   margin: const EdgeInsets.only(bottom: 16),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16)),
+                  elevation: 3,
                   child: Padding(
                     padding: const EdgeInsets.all(12),
                     child: Row(
@@ -115,18 +119,22 @@ class _RentalPageState extends State<RentalPage> {
                             ],
                           ),
                         ),
+                        const SizedBox(width: 8),
+                        // ===== PERUBAHAN DI SINI =====
+                        // Container status sekarang menggunakan warna dinamis dari fungsi _getStatusColor
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: _getStatusColor(rental['status']),
+                            color: _getStatusColor(rentalStatus), // Menggunakan fungsi warna
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            rental['status']?.toString().toUpperCase() ?? 'N/A',
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            rentalStatus.toUpperCase(),
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
                           ),
                         ),
+                        // ===== AKHIR PERUBAHAN =====
                       ],
                     ),
                   ),
