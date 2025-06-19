@@ -2,61 +2,49 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:tugas_provis/models/cart_item_model.dart';
-import 'package:tugas_provis/models/product_model.dart';
+import 'package:tugas_provis/services/supabase_services.dart';
 
 class CartViewModel extends ChangeNotifier {
-  // Daftar item di dalam keranjang
-  final List<CartItemModel> _items = [];
+  final _supabaseService = SupabaseService();
 
-  // Getter untuk mengakses daftar item dari luar
-  List<CartItemModel> get items => _items;
+  List<CartItemModel> _cartItems = [];
+  bool _isLoading = false;
+  String? _errorMessage;
 
-  // Getter untuk menghitung total harga
+  List<CartItemModel> get cartItems => _cartItems;
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
+
   double get totalPrice {
     double total = 0.0;
-    for (var item in _items) {
-      total += (item.product.pricePerDay ?? 0) * item.quantity;
+    for (var item in _cartItems) {
+      total += (item.product?.pricePerDay ?? 0) * item.quantity;
     }
     return total;
   }
 
-  // Fungsi untuk menambahkan produk ke keranjang
-  void addToCart(ProductModel product) {
-    // Cek apakah produk sudah ada di keranjang
-    for (var item in _items) {
-      if (item.product.id == product.id) {
-        // Jika sudah ada, cukup tambah kuantitasnya
-        item.quantity++;
-        notifyListeners(); // Beri tahu UI untuk update
-        return;
-      }
+  Future<void> fetchCartItems() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      _cartItems = await _supabaseService.getCartItems();
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-
-    // Jika belum ada, tambahkan sebagai item baru
-    _items.add(CartItemModel(product: product));
-    notifyListeners(); // Beri tahu UI untuk update
   }
 
-  // Fungsi untuk menambah kuantitas item
-  void incrementQuantity(CartItemModel cartItem) {
-    cartItem.quantity++;
-    notifyListeners();
-  }
-
-  // Fungsi untuk mengurangi kuantitas item
-  void decrementQuantity(CartItemModel cartItem) {
-    if (cartItem.quantity > 1) {
-      cartItem.quantity--;
-    } else {
-      // Jika kuantitas tinggal 1 dan dikurangi, hapus item dari keranjang
-      _items.remove(cartItem);
+  Future<void> addToCart({required int productId, int quantity = 1}) async {
+    try {
+      await _supabaseService.addToCart(productId: productId, quantity: quantity);
+      // Setelah berhasil, ambil ulang data keranjang untuk refresh UI
+      await fetchCartItems();
+    } catch (e) {
+      _errorMessage = e.toString();
+      notifyListeners();
     }
-    notifyListeners();
-  }
-
-  // Fungsi untuk menghapus item dari keranjang (opsional, bisa untuk tombol hapus)
-  void removeFromCart(CartItemModel cartItem) {
-    _items.remove(cartItem);
-    notifyListeners();
   }
 }

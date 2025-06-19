@@ -1,4 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tugas_provis/features/cart/widgets/cart_item.dart';
+import 'package:tugas_provis/models/cart_item_model.dart';
 import 'package:tugas_provis/models/product_model.dart';
 import 'package:tugas_provis/models/profile_model.dart';
 
@@ -112,7 +114,7 @@ class SupabaseService {
     }
   }
 
-   Future<List<ProductModel>> searchProducts(String query) async {
+  Future<List<ProductModel>> searchProducts(String query) async {
     try {
       // Menggunakan .ilike() untuk pencarian case-insensitive
       // Format '%$query%' berarti mencari teks yang mengandung query
@@ -128,6 +130,45 @@ class SupabaseService {
       return productList;
     } catch (e) {
       throw Exception('Gagal mencari produk: $e');
+    }
+  }
+
+  Future<void> addToCart({required int productId, required int quantity}) async {
+    final user = _client.auth.currentUser;
+    if (user == null) throw Exception("Pengguna harus login");
+
+    // Menggunakan upsert: update jika sudah ada, insert jika belum.
+    // Ini mencegah duplikasi item yang sama.
+    try {
+      await _client.from('cart_items').upsert({
+        'user_id': user.id,
+        'product_id': productId,
+        'quantity': quantity,
+      }, onConflict: 'user_id, product_id'); // Kunci unik untuk upsert
+    } catch (e) {
+      throw Exception("Gagal menambahkan ke keranjang: $e");
+    }
+  }
+
+  // --- FUNGSI UNTUK MENGAMBIL ISI KERANJANG ---
+  Future<List<CartItemModel>> getCartItems() async {
+    final user = _client.auth.currentUser;
+    if (user == null) return [];
+
+    try {
+      // Kita butuh detail produk, jadi kita JOIN dengan tabel products
+      final response = await _client
+          .from('cart_items')
+          .select('*, products(*)') // Ambil semua kolom dari cart_items DAN semua dari products
+          .eq('user_id', user.id);
+
+      final cartList = (response as List)
+          .map((json) => CartItemModel.fromJson(json)) // Gunakan fromJson yang sudah di-update
+          .toList();
+          
+      return cartList;
+    } catch (e) {
+      throw Exception('Gagal mengambil item keranjang: $e');
     }
   }
 }

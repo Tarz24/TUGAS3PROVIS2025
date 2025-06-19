@@ -1,12 +1,29 @@
 import 'package:flutter/material.dart';
-// Import yang disesuaikan dengan struktur baru
-import '../widgets/cart_item.dart';
+import 'package:provider/provider.dart';
+import 'package:tugas_provis/viewmodels/cart_viewmodel.dart';
+import '../widgets/cart_item.dart'; // Pastikan path ini benar
 
-class KeranjangPage extends StatelessWidget {
+class KeranjangPage extends StatefulWidget {
   const KeranjangPage({super.key});
 
   @override
+  State<KeranjangPage> createState() => _KeranjangPageState();
+}
+
+class _KeranjangPageState extends State<KeranjangPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Ambil data keranjang saat halaman pertama kali dibuka
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CartViewModel>().fetchCartItems();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final cartViewModel = context.watch<CartViewModel>();
+
     return Scaffold(
       backgroundColor: const Color(0xFFFDF3CB),
       body: Column(
@@ -14,30 +31,34 @@ class KeranjangPage extends StatelessWidget {
           _header(),
           const SizedBox(height: 12),
           Expanded(
-            child: ListView(
-              children: const [
-                CartItem(
-                  imagePath: 'assets/images/tenda.jpg',
-                  title: 'Tenda Camping Consina',
-                  price: 'IDR 120.000/day',
-                  showPeople: true,
-                ),
-                CartItem(
-                  imagePath: 'assets/images/sleeping_bag.jpg',
-                  title: 'Sleepingbag Polar Tebal + Bantal',
-                  price: 'IDR 25.000/day',
-                ),
-                CartItem(
-                  imagePath: 'assets/images/sepatu.jpg',
-                  title: 'Sepatu Outdoor OWEN',
-                  price: 'IDR 45.000/day',
-                ),
-              ],
-            ),
+            child: _buildCartList(cartViewModel),
           ),
-          _bottomBar(),
+          // Tampilkan total dan tombol checkout hanya jika ada item
+          if (cartViewModel.cartItems.isNotEmpty)
+            _bottomBar(cartViewModel.totalPrice),
         ],
       ),
+    );
+  }
+
+  Widget _buildCartList(CartViewModel viewModel) {
+    if (viewModel.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (viewModel.errorMessage != null) {
+      return Center(child: Text('Error: ${viewModel.errorMessage}'));
+    }
+    if (viewModel.cartItems.isEmpty) {
+      return const Center(child: Text('Keranjang Anda masih kosong.'));
+    }
+
+    return ListView.builder(
+      itemCount: viewModel.cartItems.length,
+      itemBuilder: (context, index) {
+        final cartItem = viewModel.cartItems[index];
+        // Kita akan modifikasi CartItem widget agar menerima CartItemModel
+        return CartItem(cartItem: cartItem);
+      },
     );
   }
 
@@ -56,31 +77,19 @@ class KeranjangPage extends StatelessWidget {
     );
   }
 
-  Widget _bottomBar() {
+  Widget _bottomBar(double totalPrice) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF103B68),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
-        ),
-      ),
+      // ... (kode styling _bottomBar tetap sama)
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            "Total",
-            style: TextStyle(color: Colors.white, fontSize: 20),
+          Text(
+            "Total\nIDR ${totalPrice.toStringAsFixed(0)}",
+            style: const TextStyle(color: Colors.white, fontSize: 18),
           ),
           ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
+            onPressed: () { /* Navigasi ke CheckoutPage */ },
+            // ... (kode styling tombol tetap sama)
             child: const Text("Checkout", style: TextStyle(color: Colors.white)),
           ),
         ],

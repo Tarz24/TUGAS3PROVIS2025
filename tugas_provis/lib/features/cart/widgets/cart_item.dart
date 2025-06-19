@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:tugas_provis/models/cart_item_model.dart';
 
 class CartItem extends StatelessWidget {
-  final String imagePath;
-  final String title;
-  final String price;
-  final bool showPeople;
+  final CartItemModel cartItem;
 
-  const CartItem({
-    super.key,
-    required this.imagePath,
-    required this.title,
-    required this.price,
-    this.showPeople = false,
-  });
+  const CartItem({super.key, required this.cartItem});
 
   @override
   Widget build(BuildContext context) {
+    // Jika data produk tidak ada (seharusnya tidak terjadi jika JOIN berhasil)
+    if (cartItem.product == null) {
+      return const SizedBox.shrink();
+    }
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(12),
@@ -30,8 +26,8 @@ class CartItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipOval(
-                child: Image.asset(
-                  imagePath,
+                child: Image.network(
+                  cartItem.product!.imageUrl ?? 'URL_PLACEHOLDER',
                   width: 100,
                   height: 100,
                   fit: BoxFit.cover,
@@ -39,16 +35,13 @@ class CartItem extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(fontSize: 22),
-                ),
+                child: Text(cartItem.product!.name ?? 'Nama Produk', style: const TextStyle(fontSize: 22)),
               ),
               Column(
                 children: [
                   const SizedBox(height: 66),
                   Text(
-                    price,
+                    "IDR ${cartItem.product!.pricePerDay?.toStringAsFixed(0) ?? '0'}/day",
                     style: const TextStyle(fontSize: 16),
                   ),
                 ],
@@ -58,18 +51,6 @@ class CartItem extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              if (showPeople)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF4A6880),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Text(
-                    "2 Orang",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
               const SizedBox(width: 20),
               _counter(),
               const SizedBox(width:  8),

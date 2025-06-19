@@ -146,9 +146,23 @@ class _ProductDetailScreenState extends State<ProductPage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue.shade900,
         onPressed: () {
-          // aksi keranjang
+          // Dapatkan product yang sedang ditampilkan
+          final product = context.read<ProductViewModel>().selectedProduct;
+
+          if (product != null) {
+            // Panggil fungsi addToCart dari CartViewModel
+            context.read<CartViewModel>().addToCart(productId: product.id);
+            
+            // Tampilkan notifikasi
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('${product.name} ditambahkan ke keranjang!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
         },
-        child: Icon(Icons.shopping_cart, color: Colors.white),
+        child: const Icon(Icons.shopping_cart, color: Colors.white),
       ),
     );
   }
