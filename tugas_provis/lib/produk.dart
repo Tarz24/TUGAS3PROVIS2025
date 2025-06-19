@@ -1,185 +1,167 @@
 import 'package:flutter/material.dart';
+import 'package:tugas_provis/checkout.dart';
+import 'package:tugas_provis/supabase_client.dart';
 
-void main() {
-  runApp(MaterialApp(
-    home: ProductPage(),
-    debugShowCheckedModeBanner: false,
-  ));
-}
-
+// Mengubah class agar bisa menerima productId dari halaman menu
 class ProductPage extends StatefulWidget {
+  final int productId;
+  const ProductPage({super.key, required this.productId});
+
   @override
-  _ProductPageState createState() => _ProductPageState();
+  State<ProductPage> createState() => _ProductPageState();
 }
 
 class _ProductPageState extends State<ProductPage> {
-  String selectedVariant = "2 Orang";
+  // Future untuk mengambil data satu produk
+  late final Future<Map<String, dynamic>> _productFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    // Ambil detail produk berdasarkan ID yang diterima
+    _productFuture = supabase
+        .from('products')
+        .select()
+        .eq('id', widget.productId)
+        .single();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xFFFFF7D4),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
+    // Scaffold sekarang berada di dalam FutureBuilder agar FAB bisa mengakses data 'product'
+    return FutureBuilder<Map<String, dynamic>>(
+      future: _productFuture,
+      builder: (context, snapshot) {
+        // Tampilkan loading screen jika data belum siap
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+        // Tampilkan error jika terjadi masalah
+        if (snapshot.hasError || !snapshot.hasData) {
+          return Scaffold(
+              body: Center(
+                  child: Text(
+                      'Error: ${snapshot.error ?? "Produk tidak ditemukan."}')));
+        }
+
+        final product = snapshot.data!;
+
+        // Tampilkan UI Halaman Produk dengan data dinamis
+        return Scaffold(
+          backgroundColor: const Color(0xFFFFF7D4),
+          body: Stack(
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Image.asset(
-                      "assets/images/tenda.jpg",
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: 350,
-                    ),
-                    Positioned(
-                      top: 30,
-                      left: 16,
-                      child: CircleAvatar(
-                        backgroundColor: Colors.blue.shade900,
-                        child: IconButton(
-                          icon: Icon(Icons.arrow_back, color: Colors.white),
-                          onPressed: () {
-                            Navigator.pop(context);
+                    Stack(
+                      children: [
+                        Image.network(
+                          product['image_url'] ??
+                              'https://placehold.co/600x400/png?text=No+Image',
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: 350,
+                          loadingBuilder: (context, child, progress) {
+                            return progress == null
+                                ? child
+                                : const Center(child: CircularProgressIndicator());
                           },
                         ),
+                        Positioned(
+                          top: 40,
+                          left: 16,
+                          child: CircleAvatar(
+                            backgroundColor:
+                            Colors.blue.shade900.withOpacity(0.7),
+                            child: IconButton(
+                              icon:
+                              const Icon(Icons.arrow_back, color: Colors.white),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                      child: Row(
+                        children: (product['tags'] as List<dynamic>? ?? [])
+                            .map((tag) => BadgeLabel(label: tag.toString()))
+                            .toList(),
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        product['name'].toString(),
+                        style: const TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        product['description'] ??
+                            'Tidak ada deskripsi untuk produk ini.',
+                        style: const TextStyle(fontSize: 14, height: 1.5),
+                      ),
+                    ),
+                    const SizedBox(height: 80),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Row(
-                    children: [
-                      BadgeLabel(label: "HOT", color: Colors.orange),
-                      SizedBox(width: 8),
-                      BadgeLabel(label: "RECOMMENDED", color: Colors.green),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    "TENDA CAMPING CONSINA",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    "Barang berkualitas ya kak, kita pastikan QC sebelum kirim. Silakan langsung di pesan, pengiriman 1x24 jam ya ka.\n\nTenda camping otomatis untuk 2 - 4 orang.\nWarna: hijau, biru, oranye.\n\nNote:\nCantumkan warna cadangan saat order, jika stok kosong dikirim warna random sesuai stok yang ada. Pesanan tetap diproses kecuali ada keterangan cancel.",
-                    style: TextStyle(fontSize: 14, height: 1.5),
-                  ),
-                ),
-                SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    "Varian:",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Row(
-                    children: [
-                      VariantButton(
-                        label: "2 Orang",
-                        isSelected: selectedVariant == "2 Orang",
-                        onTap: () {
-                          setState(() {
-                            selectedVariant = "2 Orang";
-                          });
-                        },
-                      ),
-                      SizedBox(width: 10),
-                      VariantButton(
-                        label: "3 Orang",
-                        isSelected: selectedVariant == "3 Orang",
-                        onTap: () {
-                          setState(() {
-                            selectedVariant = "3 Orang";
-                          });
-                        },
-                      ),
-                      SizedBox(width: 10),
-                      VariantButton(
-                        label: "4 Orang",
-                        isSelected: selectedVariant == "4 Orang",
-                        onTap: () {
-                          setState(() {
-                            selectedVariant = "4 Orang";
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue.shade900,
-        onPressed: () {
-          // aksi keranjang
-        },
-        child: Icon(Icons.shopping_cart, color: Colors.white),
-      ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () {
+              // FIX: Kirim data 'product' yang sudah jadi (Map), bukan '_productFuture'
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CheckoutPage(product: product),
+                ),
+              );
+            },
+            backgroundColor: Colors.blue.shade900,
+            icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
+            label: const Text("Sewa Sekarang", style: TextStyle(color: Colors.white)),
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        );
+      },
     );
   }
 }
 
+// Widget BadgeLabel tidak diubah
 class BadgeLabel extends StatelessWidget {
   final String label;
-  final Color color;
-
-  const BadgeLabel({required this.label, required this.color});
+  const BadgeLabel({super.key, required this.label});
 
   @override
   Widget build(BuildContext context) {
+    Color badgeColor;
+    if (label.toLowerCase() == 'hot deal') {
+      badgeColor = Colors.orange;
+    } else if (label.toLowerCase() == 'recommended') {
+      badgeColor = Colors.green;
+    } else {
+      badgeColor = Colors.blueGrey;
+    }
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      margin: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color,
+        color: badgeColor,
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
         label,
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-      ),
-    );
-  }
-}
-
-class VariantButton extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const VariantButton({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onTap,
-      child: Text(label),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected ? Colors.blue.shade900 : Colors.blueGrey.shade600,
-        foregroundColor: Colors.white,
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        textStyle: TextStyle(fontSize: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        elevation: isSelected ? 4 : 2,
+        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
       ),
     );
   }
